@@ -2,6 +2,8 @@
 
 セキュリティに特化した内容を扱います。
 
+内容的にマスターコンポーネントの設定変更などが含まれます。そのため、EKS等のマネージドK8sだと実践できないものもあるかと思います。kubeadmで自前のクラスタを作成するのに参考となるterraformを用意しましたので活用ください。[k8s-practice-env](https://github.com/moriryota62/k8s-practice-env)
+
 ## 目次
 
 - クラスタ設定
