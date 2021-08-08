@@ -7,52 +7,63 @@
 
 ネットワークポリシーはK8s内のSecurityGroupのようなものです。
 
-## メタデータへのアクセス制限
-
-メタデータはパブリッククラウドにおいてインスタンス等の情報です。このデータにアクセスすることでクラウド上のサーバ情報を知ることができます。Podが乗っ取られた場合を考えPodからメタデータへのアクセスを制限します。
-
-1. nginxのPodを起動しそのPodから以下curlを実行しメタデータからホストの情報を取得できることを確認してください。（AWSの場合です。）
-
-``` sh
-curl -s http://169.254.169.254/latest/meta-data/
-```
-
-2. ネットワークポリシーを作成し、**メタデータへのアウトバウンドのみ**を制限してください。（ヒント：特定のIPのみ除外する場合は[except](https://kubernetes.io/docs/reference/kubernetes-api/policy-resources/network-policy-v1/)を使います。）
-
-3. 再度nginxのPodからcurlを実行し、メタデータが取得できないことを確認してください。また、Podから他インターネット上のサービスにアクセスできることを確認してください。
-
-4. PodおよびNetworkPolicyを削除してください。
-
-## 複雑なアクセス制限
-
 1. 以下を満たリソース群をデプロイしてください。
 
 - Namespaceを2つ。名前は`public`と`private`
-- 各Namespaceにはすべてのインバウンドとアウトバウンドを禁止するNetworkPolicyがついている
-- 各Namespaceには2つのDeploymentがある。すべてreplica:1でnginxを動かす。一方のDeploymentには`app=front`、もう一方のDeploymentには`app=back`のラベルがついている。各Podの/usr/share/nginx/html/index.htmlはどのNamespaceのどのDeploymentか判別できる内容にする
-- 各deploymentはService経由でport:80にアクセスできる
-- 各Namespace内で`app=front`から`app=back`への通信は許可する。
-- `public`の`app=front`から`private`の`app=front`への通信は許可する。
-- `private`のすべてのDeploymentから`public`への通信を許可する。
+- 各Namespaceにはすべてのインバウンドとアウトバウンドを禁止するNetworkPolicyがついている。ただし、CoreDNSと通信するためTCP/UDP53のアウトバウンドは許可する
+- 各Namespaceには2つのPodがある。すべてnginxを動かす。名前は`front`と`back`でそれぞれ`app=<Pod名>`のラベルがついている
+- 各Podの/usr/share/nginx/html/index.htmlはどのNamespaceのどのDeploymentか判別できる内容にする。(例：public-fornt、private-back等)
+- 各PodはPod名と同じ名前のService経由でport:80にアクセスできる。
+- 各Namespace内で`front`から`back`への通信は許可する。
+- `public`の`front`から`private`の`front`への通信は許可する。
+- `private`から`public`への通信を許可する。
+
+2. 以下コマンドを実行し、通信結果が結果表の通りとなることを確認してください。（`142.250.191.142`はgoogle.comです。）
+
+``` sh
+kubectl exec -n public front -- curl -s -m 1 back.public 2>/dev/null
+kubectl exec -n public front -- curl -s -m 1 front.private 2>/dev/null
+kubectl exec -n public front -- curl -s -m 1 back.private 2>/dev/null
+kubectl exec -n public front -- curl -s -m 1 142.250.191.142 2>/dev/null
+
+kubectl exec -n public back -- curl -s -m 1 front.public 2>/dev/null
+kubectl exec -n public back -- curl -s -m 1 front.private 2>/dev/null
+kubectl exec -n public back -- curl -s -m 1 back.private 2>/dev/null
+kubectl exec -n public back -- curl -s -m 1 142.250.191.142 2>/dev/null
+
+kubectl exec -n private front -- curl -s -m 1 front.public 2>/dev/null
+kubectl exec -n private front -- curl -s -m 1 back.public 2>/dev/null
+kubectl exec -n private front -- curl -s -m 1 back.private 2>/dev/null
+kubectl exec -n private front -- curl -s -m 1 142.250.191.142 2>/dev/null
+
+kubectl exec -n private back -- curl -s -m 1 front.public 2>/dev/null
+kubectl exec -n private back -- curl -s -m 1 back.public 2>/dev/null
+kubectl exec -n private back -- curl -s -m 1 front.private 2>/dev/null
+kubectl exec -n private back -- curl -s -m 1 142.250.191.142 2>/dev/null
+```
+
+**結果表**
 
 |元|先|通信可否|
 |-|-|-|
-|public:app=front|public:app=back|○|
-|public:app=front|private:app=front|○|
-|public:app=front|private:app=back|✗|
-|public:app=front|それ以外|✗|
-|public:app=back|public:app=front|✗|
-|public:app=back|private:app=front|✗|
-|public:app=back|private:app=back|✗|
-|public:app=back|それ以外|✗|
-|private:app=front|private:app=back|○|
-|private:app=front|public:app=front|○|
-|private:app=front|public:app=back|○|
-|private:app=front|それ以外|✗|
-|private:app=back|private:app=front|✗|
-|private:app=back|public:app=front|○|
-|private:app=back|public:app=back|○|
-|private:app=back|それ以外|✗|
+|front.public|back.public|○|
+|front.public|front.private|○|
+|front.public|back.private|✗|
+|front.public|それ以外|✗|
+|back.public|front.public|✗|
+|back.public|front.private|✗|
+|back.public|back.private|✗|
+|back.public|それ以外|✗|
+|front.private|front.public|○|
+|front.private|back.public|○|
+|front.private|back.private|○|
+|front.private|それ以外|✗|
+|back.private|front.public|○|
+|back.private|back.public|○|
+|back.private|front.private|✗|
+|back.private|それ以外|✗|
+
+3. Pod、NetworkPolicy、Namespaceを削除してください。
 
 [*解答例*](../ans/networkpolicy.md)  
 
