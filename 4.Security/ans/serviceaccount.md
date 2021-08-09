@@ -31,9 +31,9 @@ kubectl create secret generic test --from-literal=test=value -n kube-system
 kubectl create configmap test --from-literal=test=value -n default
 kubectl create configmap test --from-literal=test=value -n kube-system
 kubectl create clusterrole get-secret --verb=get --resource=secret
-kubectl create clusterrole get-configmap --verb=get --resource=configmap
+kubectl create clusterrole get-config --verb=get --resource=configmap
 kubectl create rolebinding test -n default --clusterrole get-secret --group system:serviceaccounts:default
-kubectl create clusterrolebinding test --clusterrole get-configmap --group system:serviceaccounts
+kubectl create clusterrolebinding test --clusterrole get-config --group system:serviceaccounts
 
 kubectl run test -n default --image=nginx
 kubectl exec -it test -- sh
@@ -50,7 +50,7 @@ kubectl delete pod test -n kube-system
 kubectl delete clusterrolebinding test
 kubectl delete rolebinding test
 kubectl delete clusterrole get-secret
-kubectl delete clusterrole get-configmap 
+kubectl delete clusterrole get-config 
 kubectl delete configmap test
 kubectl delete configmap test -n kube-system
 kubectl delete secret test
