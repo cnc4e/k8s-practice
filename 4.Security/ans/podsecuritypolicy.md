@@ -58,6 +58,7 @@ EOF
 
 kubectl run nginx --image=nginx -n test
 kubectl describe pod nginx -n test
+kubectl delete pod nginx -n test
 
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -73,8 +74,8 @@ spec:
   - image: nginx
     name: nginx
     securityContext:
-      privileged: false
-      readOnlyRootFilesystem: true
+      privileged: false            # これはなくてもPSPで自動で設定される
+      readOnlyRootFilesystem: true # これはなくてもPSPで自動で設定される
       runAsUser: 101
     volumeMounts:
     - mountPath: /var/run/
