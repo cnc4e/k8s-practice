@@ -25,7 +25,7 @@ PodSecurityPolicyを使うとPodのセキュリティ設定を強制できます
 
 6. ns:testでnginxのPodを起動してください。起動できないことを確認してください。
    
-7. 原因を特定しns:testでnginxを起動できるようにマニフェストを修正しデプロイしてください。（ヒント：[セキュリティコンテキストの設定](securitycontext.md)の設定を参考にすると良いです。）
+7. 原因を特定しns:testでnginxを起動できるようにマニフェストを修正しデプロイしてください。（ヒント：[セキュリティコンテキストの設定](securitycontext.md)を参考にすると良いです。）
 
 8. 作成したPod、RBAC、Namespaec、PSPをすべて削除してください。
 
