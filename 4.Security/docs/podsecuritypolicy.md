@@ -29,6 +29,8 @@ PodSecurityPolicyを使うとPodのセキュリティ設定を強制できます
 
 8. 作成したPod、RBAC、Namespaec、PSPをすべて削除してください。
 
+9. kube-apiserverの設定を修正しPodSecurityPolicyを無効にしてください。
+
 [*解答例*](../ans/podsecuritypolicy.md)  
 
 ---

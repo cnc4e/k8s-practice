@@ -100,4 +100,7 @@ kubectl delete clusterrole test
 kubectl delete ns test
 kubectl delete psp test
 
+vi kube-apiserver.yaml
+>     - --enable-admission-plugins=NodeRestriction
+
 ```
