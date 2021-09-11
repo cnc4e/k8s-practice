@@ -17,7 +17,7 @@
 
 5. handlerとしてgvisor(runsc)を使用するRuntimeClassを作成してください。（([ヒント](https://kubernetes.io/ja/docs/concepts/containers/runtime-class/))）
 
-6. 上記作成したRuntimeClassを使用してPodを起動してください。起動したPodに`dmseg`の追加コマンドを発行し、gvisorで動いていることを確認してください。
+6. 上記作成したRuntimeClassを使用してPodを起動してください。起動したPodに`dmseg`の追加コマンドを発行し、gvisorで動いていることを確認してください。（[ヒント](https://kubernetes.io/docs/concepts/containers/runtime-class/)）
 
 7. PodとRuntimeClassを削除してください。
 
