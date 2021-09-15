@@ -7,7 +7,7 @@
 
 seccompを使うとPodが使えるシステムコールを制限できます。どのシステムコールを使うか洗い出すのはとても大変なため、[docker-slim](https://github.com/docker-slim/docker-slim)を使ってプロファイルの雛形を作成します。
 
-1. ワーカーノードで以下のseccompプロファイルを作成してください。プロファイルは`/var/lib/kubelet/seccomp`ディレクトリ以下に作成してください。これはすべてのシステムコールを禁止します。
+1. ワーカーノードで以下のseccompプロファイル(json)を作成してください。プロファイルは`/var/lib/kubelet/seccomp`ディレクトリ以下に作成してください。これはすべてのシステムコールを禁止します。
 
 ``` json
 {

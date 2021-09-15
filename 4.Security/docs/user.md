@@ -9,7 +9,13 @@ K8sにはrole/rolebindingを使ったRBACの仕組みがあります。これを
 
 1. `add-user`という名前で認証されたユーザにclusterrole:viewを割り当ててください
 
-2. kubeconfigを`add-user`でアクセスする様に修正し、add-userでリソースの一覧を取得してください。また、リソースの作成に失敗することを確認してください。（ヒント：`add-user`用の証明書と秘密鍵を作成します。証明書を署名する認証局はapiserverが認証に使用する認証局で行います。apiserverでは--client-ca-fileで認証局の証明書を指定しています。）
+2. kubeconfigを`add-user`でアクセスする様に修正し、add-userでリソースの一覧を取得してください。また、リソースの作成に失敗することを確認してください。（ヒント：`add-user`用の証明書と秘密鍵を作成します。証明書を署名する認証局はapiserverが認証に使用する認証局で行います。証明書の作成は以下コマンドを参考にしてください。apiserverでは--client-ca-fileで認証局の証明書を指定しています。）
+
+``` sh
+openssl genrsa -out <秘密鍵> 4096
+openssl req -new -key <秘密鍵> -out <証明書要求>
+openssl x509 -req -days 9999 -in <証明書要求> -CA <CA証明書> -CAkey <CA秘密鍵> -CAcreateserial -out <証明書>
+```
 
 3. kubeconfigを`kubernetes-admin`に戻してください。
 

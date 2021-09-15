@@ -46,7 +46,7 @@ etcdの中にはSecretの値など機密情報が含まれます。etcdに直接
 
 ## etcdの復号化
 
-復号にするにはEncryptionConfigurationの一番上のproviderにidentityを設定し、etcd
+復号にするにはEncryptionConfigurationのproviderの順番を入れ替えます。その後再度Secretを再作成すれば復号化できます。
 
 1. EncryptionConfigurationのマニフェストを修正しaescbcとidentityの順番を逆にしてください。（identityが一番上）
 
