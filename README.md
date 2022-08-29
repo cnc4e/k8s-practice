@@ -19,7 +19,9 @@ K8s practice は大きく以下の4つのカテゴリに分けています。
 |[Beginner](1.Beginner)|初級カテゴリです。kubectlやPodなど基礎となるリソースについて扱います。|
 |[Intermediate](2.Intermediate)|中級カテゴリです。K8s標準で使えるリソースを扱います。|
 |[Advanced](3.Advanced)|上級カテゴリです。アドオンを追加することで使用できるリソースを扱います。|
-|[Security](4.Security)|セキュリティに特化したカテゴリです。[CKS](https://training.linuxfoundation.org/ja/certification/certified-kubernetes-security-specialist/)で問われる内容について扱います。|
+|[Security](4.Security)|セキュリティに特化したカテゴリです。[CKS][1]で問われる内容について扱います。|
+
+[1]:https://training.linuxfoundation.org/ja/certification/certified-kubernetes-security-specialist/
 
 ## 前提
 
@@ -30,10 +32,45 @@ K8s practice は大きく以下の4つのカテゴリに分けています。
 本問題集ではkubectlのインストールやK8sクラスタ作成などの実習環境の構築は取り扱いません。
 実習環境は別途用意して、kubectlでクラスタに接続できる状態としてください。
 
-これらを準備する手順としては[Amazon EKSの開始方法](https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/getting-started.html)などを参考にしてください。
+これらを準備する手順としては[Amazon EKSの開始方法][2]などを参考にしてください。
 
-なおEKSクラスタで使用するノードは`マネージド型ノード`を選択してください。
-AWS Fargateは機能制約があるため、Amazon EBSを使用した問題など、一部の練習問題が実施できません。
+> :information_source:  
+> EKSクラスタで使用するノードは`マネージド型ノード`を選択してください。
+> AWS Fargateは機能制約があるため、Amazon EBSを使用した問題など、一部の練習問題が実施できません。
+
+[2]:https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/getting-started.html
+
+<details>
+  <summary>
+  環境構築に困ったら
+  </summary>
+  <div>
+  環境構築に困った場合は以下を参考にしてみてください。
+
+  - eksctlコマンド
+
+    ```bash
+    # クラスタ作成
+    eksctl create cluster \
+      --name k8s-practice \
+      --region <リージョン> \
+      --nodes=2 \
+      --node-type t3.medium \
+      --version 1.22
+
+    # クラスタ削除
+    eksctl delete cluster \
+      --name k8s-practice \
+      --region <リージョン>
+    ```
+
+  - terraform
+    - [eks-terraform][3]
+
+  </div>
+</details>
+
+[3]:https://github.com/moriryota62/eks-terraform
 
 ### 各コンポーネントのバージョン
 
