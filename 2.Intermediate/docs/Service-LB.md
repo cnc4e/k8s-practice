@@ -1,35 +1,58 @@
-前： [DynamicVolumeProvisioning](DynamicVolumeProvisioning.md)    
+前： [PersistentVolume](PersistentVolume.md)
 
 ---
 
 # Service LoadBalancer
-今までの内容ではPodへのアクセスをK8sクラスタ内部でおこなっていました。次はK8sクラスタ外部からアクセスしたいと思います。K8sクラスタ外部からアクセスを受けられるようにするにはLoadBalancerタイプのServiceを作成するのがもっとも手っ取り早いです。ただし、LoadBalancerタイプのServiceはAWSなどの対応したクラウドプロバイダで動いている場合のみです。また、LoadBalancerタイプのServiceは1つのServiceに1つのLoadBalancer(AWSだとELB)を作成するため、たくさん外部公開したいときは[Ingress](../3.Advanced/3-06.Ingress.md)などの利用を検討しましょう。
 
-1. 以下を満たすServiceおよびDeploymentをデプロイしてください。Service Type:LoadBalancerについては[公式ドキュメント](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)を参考にしてください。
-   - Service
-     - 名前は``lb-svc``
-     - 対象のlabelは``app: lb``
-     - プロトコルは``TCP``
-     - Portは``80``
-     - clusterIPは``指定なし``で良い
-     - typeは``LoadBalancer``
-   - Deployment
-     - 名前は``lb``
-     - replicas: ``1``
-     - labelはすべて``app: lb``
-     - Pod
-       - containerは一つでイメージは``nginx:1.12``
-2. Serviceリソースの一覧を表示しデプロイしたlb-svcの``EXTERNAL-IP``を確認してください。（あとで使うのでメモしておく）
-3. デプロイしたPod内のコンテナに対して追加コマンドを発行し、以下内容の/usr/share/nginx/html/index.htmlを作成してください。
-  ```
-  Type:LoadBalancer ha tottemo benri na kinou desu
-  ```
-4. インターネット接続可能な端末のwebブラウザからさきほど確認したlb-svcのEXTERNAL-IPにアクセスしてください。上記、修正した内容が表示されることを確認してください。（なお、AWSだとLBが使用可能になるまで2分くらいかかるので何度かアクセスしてみる。最長でも5分くらいすればアクセスできると思う。）
-5. AWSマネジメントコンソールなどでELBを確認し、EXTERNAL-IPと同じDNS名を持つclassicのLBがデプロイされていることを確認してください。また、LBにアタッチされたsecurity group名を確認してください。
-6. AWSマネジメントコンソールなどでK8sのワーカーにアタッチされているsecurity groupを確認し、LBにアタッチされたsecurity groupからのインバウンドが許可されていることを確認してください。
-7. curlを実行できるPodを展開し、Service:lb-svcに対してcurlを実行してください。クラスタ内部からはtype:ClusterIPと同じようにアクセスできることを確認してください。
-8. Service:lb-svcおよびDeployment:lbを削除してください。
-9. AWSマネジメントコンソールなどでELBおよびワーカーノードのsecurity groupを確認し、Type:LoadBalancerの設定が消えていることを確認してください。
+今までの内容ではPodへのアクセスをK8sクラスタ内部で行っていました。
+次はK8sクラスタ外部からアクセスしたいと思います。
+K8sクラスタ外部からアクセスを受けられるようにするにはLoadBalancerタイプのServiceを作成するのがもっとも手っ取り早いです。
+ただし、LoadBalancerタイプのServiceはAWSなどの対応したクラウドプロバイダで動いている場合のみ利用可能です。
+
+また、LoadBalancerタイプのServiceは1つのServiceに1つのLoadBalancer(AWSだとELB)を作成するため、たくさん外部公開したいときは[Ingress](../../3.Advanced/3-06.Ingress.md)などの利用を検討しましょう。
+
+# 演習
+
+1. 以下を満たすDeployment, Serviceをデプロイしてください。Service Type:LoadBalancerについては[公式ドキュメント][1]を参考にしてください。
+
+   - 要件
+     - Deployment
+       - 名前は`nginx`
+       - replicas: `1`
+       - labelはすべて`app: nginx`
+       - Pod
+         - 名前は`nginx`
+         - イメージは`nginx:1.12`
+     - Service
+       - 名前は`nginx-lb`
+       - Namespaceは`web`
+       - 対象のlabelは`app: nginx`
+       - プロトコルは`TCP`
+       - Portは`80`
+       - clusterIPは`指定なし`で良い
+       - typeは`LoadBalancer`
+
+1. Serviceリソースの一覧を表示しデプロイしたnginx-lbの`EXTERNAL-IP`を確認してください。（あとで使うのでメモしておく）
+
+1. インターネット接続可能な端末のwebブラウザからさきほど確認したnginx-lbのEXTERNAL-IPにアクセスしてください。  
+  （AWSの場合、ELBが使用可能になるまで2分くらいかかる。最初はエラーになるので何度かアクセスしてみる。最長でも5分くらいすればアクセス可能になる。）
+
+1. AWSマネジメントコンソールなどでELBを確認し、EXTERNAL-IPと同じDNS名を持つclassicのLBがデプロイされていることを確認してください。また、LBにアタッチされたsecurity group名を確認してください。
+
+1. AWSマネジメントコンソールなどでK8sのワーカーにアタッチされているsecurity groupを確認し、LBにアタッチされたsecurity groupからのインバウンドが許可されていることを確認してください。
+
+1. curlを実行できるPodを展開し、Service:lb-svcに`ClusterIP`に対してcurlを実行し、アクセスできることを確認してください。  
+
+1. 作成したリソースを削除してください。
+
+1. AWSマネジメントコンソールなどでELBおよびワーカーノードのsecurity groupを確認し、Type:LoadBalancerの設定が消えていることを確認してください。
+
+以上で本演習は終了です。
+
+具体的な操作およびその結果に関する回答例は[こちら](../ans/Service-LB_answer.md)にあります。
+具体的な操作方法がわからなかった場合や、想定した結果にならなかった場合などに参照してください。
+
+[1]:https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer
 
 ---
 

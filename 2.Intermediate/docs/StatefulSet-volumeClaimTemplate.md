@@ -5,86 +5,135 @@
 # StatefulSet volumeClaimTemplate
 
 ## PVC指定の場合
-volumeClaimTemplateはPodごとにPVCおよびPVを作成する、StatefulSetで使える機能です。この機能を理解するため、Deploymentでのボリュームプロビジョニングの特徴をおさらいします。
 
-※ ワーカーノードを2台以上にしてください。
+volumeClaimTemplateはPodごとにPVCおよびPVを作成する、StatefulSetで使える機能です。
+この機能を理解するため、まずはDeploymentでのボリュームプロビジョニングの特徴をおさらいします。
+
+> :information_source:  
+> この演習はAWS EKSでの実施を前提としています。
+> AWS以外のクラウドを使用する際は、内容を適宜読み替えてください。
+
+> :information_source:  
+> 本演習を実施するにあたり、ワーカーノードを2台以上にしてください。
 
 1. 以下を満たすマニフェストを作成しデプロイしてください。
-   - Deployment
-     - 名前は``dep-dvp``
-     - replicas: ``2``
-     - labelはすべて``app: dep-dvp``
-     - Pod
-       - containerは一つでイメージは``nginx:1.12``
-       - volumeプラグインでPVC:``dep-dvp-pvc``を指定
-       - 上記で定義したボリュームをコンテナの/usr/share/nginx/html/にマウント
-       - postStartで次のコマンドを実行``['/bin/sh','-c','echo $HOSTNAME >> /usr/share/nginx/html/index.html']``
-   - PVC
-     - 名前は``dep-dvp-pvc``
-     - storageClassNameは``指定しない``（デフォルトのStorageClassを使用する）
-     - accessModesは``ReadWriteOnce``
-     - ストレージ容量は``1Gi``
-   - Service
-     - 名前は``dep-dvp-svc``
-     - タイプは指定なし（ClusterIP）
-     - Portは80
-     - selectorは``app: dep-dvp``
-2. PVCおよびPVリソースのオブジェクト一覧を表示し、それぞれ``1つ``作成されていることを確認してください。
-3. Podリソースのオブジェクト一覧を表示し2つのPodの名前を確認してください。
-4. curlが実行できるコンテナを含むPodをデプロイし、Service``dep-dvp-svc``にcurlしてください。``2つ``のPod名が表示されることを確認してください。
-5. Deployment:dep-dvpのreplicaを``5``に拡張してください。
-6. PVCおよびPVリソースのオブジェクト一覧を表示し、それぞれ``1つのまま``であることを確認してください。
-7. Podリソースのオブジェクト一覧を表示し5つのPodの名前を確認してください。また、すべてのPodが同じノードで起動していることも確認してください。
-8. curlが実行できるコンテナを含むPodからService``dep-dvp-svc``にcurlしてください。``5つ``のPod名が表示されることを確認してください。
-9.  Deploymet:dep-dvp、PVC:dep-dvp-pvc、Service:dev-dvp-svcを削除してください。
 
-ここまでがDeploymentでのボリュームプロビジョニングのおさらいです。注目するポイントとしては展開したPodすべてで同じボリュームを共有する点です。そのため、PVCおよびPVは1つしか作られません。ボリュームの中身もすべてのPodで共有します。なので、たとえばWEBサーバなどのワークロードでセッション情報をPod間で共有したいなどと言った場合にはこの構成が有効です。一方で、DBなどのワークロードで各Podが専用のボリュームを確保したい場合には適しません。また、今回はPVCでstorageClassNameを指定しなかったためデフォルトのStorageClassであるEBSのtype:gp2(EKSの場合)で実際のボリュームは作られています。EBSは単一のEC2インスタンスにしかボリュームを提供できません。そのため、replica数が増えても単一のワーカーノード（EC2）にしかPodがスケジュールできません。replica数を2以上にするDeploymentでDVPするときは、EBSではなくEFSなどRead/Write Anyできるボリュームが使えるStorageClassを使用した方が良いです。  
+   - 要件
+     - Deployment
+       - 名前は`nginx-dp`
+       - labelはすべて`app: nginx-dp`
+       - replicasは `3`
+       - Pod
+         - 名前は`nginx`
+         - イメージは`nginx:1.12`
+         - volumeプラグインでPVC:nginx-dp-pvcを指定
+         - 上記で定義したボリュームをコンテナの`/usr/share/nginx/html`にマウント
+         - lifecycleの`postStart`で`["/bin/sh","-c","echo $HOSTNAME >> /usr/share/nginx/html/index.html"]`を実行
+     - PVC
+       - 名前は`nginx-dp-pvc`
+       - storageClassNameは`指定しない`（デフォルトのStorageClassを使用する）
+       - accessModesは`ReadWriteOnce`
+       - ストレージ容量は`1Gi`
+
+1. PVCおよびPVリソースのオブジェクト一覧を表示し、`nginx-dp-pvc`を含むものがそれぞれ`1つ`作成されていることを確認してください。
+
+1. Podリソースのオブジェクト一覧を表示し、3つのPodの名前および稼働するワーカーノードを確認してください。
+
+1. いずれか1つのPodにログインし、次のコマンドを発行してください。
+
+   ```bash
+   echo $HOSTNAME > /usr/share/nginx/html/index.html
+   cat /usr/share/nginx/html/index.html
+   ```
+
+1. 先ほどとは別のPodにログインし、次のコマンドを発行してください。表示されるホスト名が`最初にログインしたPod名が表示される`ことを確認してください。
+
+   ```bash
+   cat /usr/share/nginx/html/index.html
+   ```
+
+1. Deploymet:nginx-dp、PVC:nginx-dp-pvcを削除してください。
+
+   【回答例】
+
+   ```bash
+   $ kubectl delete -f nginx-dp.yaml
+   deployment.apps "nginx-dp" deleted
+   persistentvolumeclaim "nginx-dp-pvc" deleted
+   ```
+
+ここまでがDeploymentでのボリュームプロビジョニングのおさらいです。
+注目するポイントとしては展開したPodすべてで同じボリュームを共有する点です。
+そのため、PVCおよびPVは1つしか作られません。ボリュームの中身もすべてのPodで共有します。
+ですので、例えばWEBサーバなどのワークロードでセッション情報をPod間で共有したいなどと言った場合にはこの構成が有効です。
+一方で、DBなどのワークロードで各Podが専用のボリュームを確保したい場合には適しません。
+また、今回はPVCでstorageClassNameを指定しなかったためデフォルトのStorageClassであるEBSのtype:gp2(EKSの場合)で実際のボリュームは作られています。
+EBSは単一のEC2インスタンスにしかボリュームを提供できません。
+そのため、replica数が増えても単一のワーカーノード（EC2）にしかPodがスケジュールできません。複数のワーカーノードに分散させるには、EBSではなくEFSなどRead/Write Anyできるボリュームが使えるStorageClassを使用する必要があります。
 
 ## volumeClaimTemplateの場合
+
 つぎに、StatefulSetでvolumeClaimTemplateを使用した場合の挙動を確認します。
 
-1. 以下を満たすマニフェストを作成しデプロイしてください。なお、volumeClaimTemplateについては[公式ドキュメント](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#components)を参考にしてください。
-   - StatefulSet
-     - 名前は``ss-vct``
-     - labelはすべて``app: ss-vct``
-     - serviceNameは``ss-vct-svc``
-     - replicasは``2``
-     - Pod
-       - containerは一つでイメージは``nginx:1.12``
-       - ``index``ボリュームをコンテナの/usr/share/nginx/html/にマウント
-       - postStartで次のコマンドを実行``['/bin/sh','-c','echo $HOSTNAME >> /usr/share/nginx/html/index.html']``
-     - volumeClaimTemplates
-       - 名前は``index``
-       - storageClassNameは``指定しない``（デフォルトのStorageClassを使用する）
-       - accessModesは``ReadWriteOnce``
-       - ストレージ容量は``1Gi``
-   - Service
-     - 名前は``ss-vct-svc``
-     - typeは``ClusterIP``（``明示的に指定する``）
-     - clusterIPに``None``
-     - Portは``80``
-     - selectorは``app: ss-vct``
-2. PVCおよびPVリソースのオブジェクト一覧を表示し、それぞれ``2つ``作成されていることを確認してください。
-3. Podリソースのオブジェクト一覧を表示し2つのPodの名前を確認してください。
-4. curlが実行できるコンテナを含むPodをデプロイし、以下にcurlし``それぞれのPod名``が表示されることを確認してください。
-   - ss-vct-0.ss-vct-svc.default.svc.cluster.local
-   - ss-vct-1.ss-vct-svc.default.svc.cluster.local
-5. StatefulSet:ss-vctのreplicaを``5``に拡張してください。
-6. PVCおよびPVリソースのオブジェクト一覧を表示し、それぞれ``5つ``作成されていることを確認してください。
-7. Podリソースのオブジェクト一覧を表示し5つのPodの名前を確認してください。また、Podの起動ノードが分散していることも確認してください。
-8. curlが実行できるコンテナを含むPodから以下にcurlし``それぞれのPod名``が表示されることを確認してください。
-   - ss-vct-0.ss-vct-svc.default.svc.cluster.local
-   - ss-vct-1.ss-vct-svc.default.svc.cluster.local
-   - ss-vct-2.ss-vct-svc.default.svc.cluster.local
-   - ss-vct-3.ss-vct-svc.default.svc.cluster.local
-   - ss-vct-4.ss-vct-svc.default.svc.cluster.local
-9. StatefulSet:ss-vctおよびService:ss-vct-svcを削除してください。
-10. PVCおよびPVリソースのオブジェクト一覧を表示し、5つ``まだ残っている``ことを確認してください。
-11. PVC:index-ss-vct-0~4を削除してください。
+1. 以下を満たすマニフェストを作成しデプロイしてください。volumeClaimTemplateについては[公式ドキュメント][1]を参考にしてください。
 
-以上がvolumeClaimTemplateを使用したボリュームプロビジョニングです。Deploymentの時とは違い、各Pod用にPVCおよびPVが作成されました。また、StorageClassはデフォルトのEBSですが、Podのスケジュール先も分散されました。この様にPodごとに専用のボリュームを確保したい時にvolumeClaimTemplateは有効です。また、Podがセルフ・ヒーリングで再作成された場合はそのPodに対応したボリュームが引き続き使用されるます。なお、volumeClaimTemplateで作成されたPVCおよびPVはStatefulSetを削除しても``消えません``。（データを残すためにあえてこういう仕様になっていると思われます。）　この特性を利用してreplica1でもあえてStatefluSetを使用することもありますが、ボリュームが不要になった時は手動で消すのを忘れないようにしましょう。
+   - 要件
+     - StatefulSet
+       - 名前は`nginx-vct-sts`
+       - labelはすべて`app: nginx`
+       - replicasは `3`
+       - serviceNameは`nginx-vct-svc`
+       - Pod
+         - 名前は`nginx-vct`
+         - イメージは`nginx:1.12`
+         - volumeプラグインでPVC:nginx-vct-pvcを指定
+         - 上記で定義したボリュームをコンテナの`/usr/share/nginx/html`にマウント
+         - lifecycleの`postStart`で`["/bin/sh","-c","echo $HOSTNAME >> /usr/share/nginx/html/index.html"]`を実行
+       - volumeClaimTemplates
+         - 名前はindex
+         - storageClassNameは`指定しない`（デフォルトのStorageClassを使用する）
+         - accessModesは`ReadWriteOnce`
+         - ストレージ容量は`1Gi`
 
-なお、StatefulSetでもDeploymetと同じようにPVCを指定すれば1つのボリュームを複数Podで共有することもできます。
+1. PVCおよびPVリソースのオブジェクト一覧を表示し、それぞれ`3つ`作成されていることを確認してください。
+
+1. Podリソースのオブジェクト一覧を表示し、3つのPodの名前および稼働するワーカーノードを確認してください
+
+1. 1つのPodにログインし、次のコマンドを発行してください。
+
+   ```bash
+   echo $HOSTNAME > /usr/share/nginx/html/index.html
+   cat /usr/share/nginx/html/index.html
+   ```
+
+1. 先ほどとは別のPodにログインし、次のコマンドを発行してください。index.htmlの内容が`異なる`ことを確認してください。
+
+   ```bash
+   cat /usr/share/nginx/html/index.html
+   ```
+
+1. StatefulSet:nginx-vct-stsを削除してください。
+
+1. PVCおよびPVリソースのオブジェクト一覧を表示し、`削除されていない`ことを確認してください。
+
+1. PVCおよびPVリソースを削除してください。
+
+以上がvolumeClaimTemplateを使用したボリュームプロビジョニングです。
+Deploymentの時とは違い、各PodそれぞれにPVCおよびPVが作成されました。
+また、StorageClassはデフォルトのEBSですが、Podのスケジュール先も分散されました。
+この様にPodごとに専用のボリュームを確保したい時にvolumeClaimTemplateは有効です。
+また、Podがセルフ・ヒーリングで再作成された場合はそのPodに対応したボリュームが引き続き使用されるます。
+なお、volumeClaimTemplateで作成されたPVCおよびPVはStatefulSetを削除しても`消えません`。（データを残すためにあえてこういう仕様になっていると思われます。）
+この特性を利用してreplica1でもあえてStatefulSetを使用することもありますが、ボリュームが不要になった時は手動で消すのを忘れないようにしましょう。
+
+なお、StatefulSetでもDeploymentと同じようにPVCを指定すれば1つのボリュームを複数Podで共有することもできます。
+
+以上で本演習は終了です。
+
+具体的な操作およびその結果に関する回答例は[こちら](../ans/StatefulSet-volumeClaimTemplate_answer.md)にあります。
+具体的な操作方法がわからなかった場合や、想定した結果にならなかった場合などに参照してください。
+
+[1]:https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#components
 
 ---
 
