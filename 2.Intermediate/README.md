@@ -1,9 +1,22 @@
 # 2.Intermediate(中級)
-クラウドプロバイダと連携した機能や標準で利用できるさまざまなK8sリソースについて学んでいます。また、Pod設定についてもさらに踏み込んでいきます。
+
+## はじめに
+
+中級では標準で利用できるさまざまなK8sのAPIリソースについて学んでいます。
+また、クラウドプロバイダと連携した機能やPod設定の詳細な部分についてもこちらで触れます。
+
+## manifestについて
+
+初級では、使用するmanifestは全て用意してありましたが、
+中級以降では公式ドキュメントなどを参考にして`自身でmanifestを作成`してもらう形式になります。
+これは`公式ドキュメントを読み解く能力`を身に着けてもらいたいためです。
+
+初級と比較するとぐっと難易度は上がりますが、試行錯誤しながら各章を進めてください。
 
 ## 目次
+
 - クラウドプロバイダ連携機能
-  - [2-01.Dynamic Volume Provisioning](docs/DynamicVolumeProvisioning.md)
+  - [2-01.PersistentVolume](docs/PersistentVolume.md)
   - [2-02.Service(LB)](docs/Service-LB.md)
 - Pod設定
   - [2-03.resources](docs/Pod-resources.md)
@@ -24,3 +37,4 @@
   - [2-17.LimitRange](docs/LimitRange.md)
   - [2-18.ResourceQuota](docs/ResourceQuota.md)
   - [2-19.RBAC](docs/RBAC.md)
+- [章末問題](docs/Practice.md)

@@ -3,34 +3,61 @@
 ---
 
 # Pod設定 initContainer
-Pod内のメインコンテナを起動する前に一時的なコンテナをPod内で起動できます。たとえばメインコンテナ起動前の準備を実装したりできます。ポイントとしてはinitContainerで起動するコンテナはあくまでもメインコンテナ起動前の一時的なものであることです。そのため、initContainerで指定するcommandはexit0で終わるものを指定しましょう。
 
-1. 以下を満たすマニフェストを作成しデプロイしてください。なお、initContainerについては[公式ドキュメント](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use)を参考にしてください。
-   - Deployment
-     - 名前は``initcontainer``
-     - replicas: ``1``
-     - labelはすべて``app: initcontainer``
-     - Pod
-       - メインコンテナ
-         - 名前は``init-container``
-         - イメージは``nginx:1.12``
-         - volume:index-htmlを``/usr/share/nginx/html``にマウント
-       - initContainer
-         - 名前``init``
-         - イメージは``busybox``
-         - commandは``['/bin/sh','-c','echo initContainer de settei sita noda > /tmp/index.html']``
-         - volume:index-htmlを``/tmp``にマウント
-       - volume
-         - 名前は``index-html``
-         - volumeプラグインは``emptyDir``を指定
-   - Service
-     - 名前は``initcontainer-svc``
-     - Type: ``LoadBalancer``
-     - Port: ``80``
-     - 上記Deployment:initContainerで展開したPodを対象
-2. Podの詳細を確認し、init Containers の箇所を確認する。また、eventを確認しコンテナinitがメインコンテナの前に起動したことを確認する。
-3. ServiceのEXTERNAL-IPを確認し、作業端末のwebブラウザから接続する。（デプロイしてから接続できるまで2分、最長でも5分ほど時間がかかる）　initContainerで作成したindex.htmlの内容が表示されることを確認する。
-4. 作成したDeployment:initcontainerおよびService:initcontainer-svcを削除する。
+Pod内のメインコンテナを起動する前に一時的なコンテナをPod内で起動できます。
+例えばメインコンテナ起動前の準備を実装したりできます。ポイントとしてはinitContainerで起動するコンテナはあくまでもメインコンテナ起動前の一時的なものであることです。
+そのため、initContainerで指定するcommandはexit0で終わるものを指定しましょう。
+
+# 演習
+
+1. 以下を満たすDeployment, Serviceをデプロイしてください。
+
+   - 要件
+     - Deployment
+       - 名前は`nginx`
+       - replicas: `1`
+       - labelはすべて`app: nginx`
+       - Pod
+         - 名前は`nginx`
+         - イメージは`nginx:1.12`
+     - Service
+       - 名前は`nginx-svc`
+       - 対象のlabelは`app: nginx`
+       - プロトコルは`TCP`
+       - Portは`80`
+       - targetPortは`80`
+
+1. 接続確認に使用するcurlコマンドが実行可能なtestpodを作成し、testpodから`Service:nginx-svc`に対して接続確認をしてください。  
+   （`Nginxデフォルトのindex.htmlが表示されること`）
+
+1. マニフェストを以下の内容に修正し、デプロイしてください。なお、initContainerについては[公式ドキュメント][1]を参考にしてください。
+
+   - 要件
+     - Deployment
+       - Pod
+         - nginx
+           - volume:index-htmlを`/usr/share/nginx/html`にマウント
+         - initContainer
+           - 名前`init`
+           - イメージは`busybox`
+           - commandは`['/bin/sh','-c','echo initContainer de settei sita noda > /tmp/   index.html']`
+           - volume:index-htmlを`/tmp`にマウント
+         - volume
+           - 名前は`index-html`
+           - volumeプラグインは`emptyDir`を指定
+
+1. Podの詳細を確認し、init Containers の箇所を確認してください。また、eventを確認しコンテナinitがメインコンテナの前に起動したことを確認してください。
+
+1. testpodから`Service:nginx-service/index.html`に対して接続確認をしてください。（`initContainerで修正したindex.htmlが表示されること`）
+
+1. 作成したリソースを削除してください。
+
+以上で本演習は終了です。
+
+具体的な操作およびその結果に関する回答例は[こちら](../ans/Pod-initContainer_answer.md)にあります。
+具体的な操作方法がわからなかった場合や、想定した結果にならなかった場合などに参照してください。
+
+[1]:https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
 
 ---
 
