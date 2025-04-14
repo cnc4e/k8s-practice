@@ -6,10 +6,10 @@
 
 今までの内容ではPodへのアクセスをK8sクラスタ内部で行っていました。
 次はK8sクラスタ外部からアクセスしたいと思います。
-K8sクラスタ外部からアクセスを受けられるようにするにはLoadBalancerタイプのServiceを作成するのがもっとも手っ取り早いです。
+K8sクラスタ外部からアクセスを受けられるようにするにはLoadBalancerタイプのServiceを作成するのがもっとも簡単です。
 ただし、LoadBalancerタイプのServiceはAWSなどの対応したクラウドプロバイダで動いている場合のみ利用可能です。
 
-また、LoadBalancerタイプのServiceは1つのServiceに1つのLoadBalancer(AWSだとELB)を作成するため、たくさん外部公開したいときは[Ingress](../../3.Advanced/3-06.Ingress.md)などの利用を検討しましょう。
+また、LoadBalancerタイプのServiceは1つのServiceに1つのLoadBalancer(AWSだとELB)を作成するため、多くのサービスを外部公開したいときは[Ingress](../../3.Advanced/3-06.Ingress.md)などの利用を検討しましょう。
 
 # 演習
 
@@ -32,7 +32,7 @@ K8sクラスタ外部からアクセスを受けられるようにするにはLo
        - clusterIPは`指定なし`で良い
        - typeは`LoadBalancer`
 
-1. Serviceリソースの一覧を表示しデプロイしたnginx-lbの`EXTERNAL-IP`を確認してください。（あとで使うのでメモしておく）
+1. Serviceリソースの一覧を表示しデプロイしたnginx-lbの`EXTERNAL-IP`を確認してください。（あとで使うので記録しておく）
 
 1. インターネット接続可能な端末のwebブラウザからさきほど確認したnginx-lbのEXTERNAL-IPにアクセスしてください。  
   （AWSの場合、ELBが使用可能になるまで2分くらいかかる。最初はエラーになるので何度かアクセスしてみる。最長でも5分くらいすればアクセス可能になる。）
@@ -41,7 +41,7 @@ K8sクラスタ外部からアクセスを受けられるようにするにはLo
 
 1. AWSマネジメントコンソールなどでK8sのワーカーにアタッチされているsecurity groupを確認し、LBにアタッチされたsecurity groupからのインバウンドが許可されていることを確認してください。
 
-1. curlを実行できるPodを展開し、Service:lb-svcに`ClusterIP`に対してcurlを実行し、アクセスできることを確認してください。  
+1. curlを実行できるPodを展開し、Service:nginx-lbに`ClusterIP`に対してcurlを実行し、アクセスできることを確認してください。  
 
 1. 作成したリソースを削除してください。
 

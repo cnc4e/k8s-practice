@@ -18,7 +18,7 @@ K8sにはアカウント（ユーザ）が2種類あります。
 ## RBAC
 
 K8sにはRBAC(Role Based Access Control)という仕組みがあります。
-RBACは権限を表すルールを指定する`Role`とRoleとアカウントを紐付ける`RoleBinging`を作成し、アクセス制御を行います。
+RBACは権限を表すルールを指定する`Role`とRoleとアカウントを紐付ける`RoleBinding`を作成し、アクセス制御を行います。
 RBACはクラスタ操作権限を制限したい場合（例えば、admin権限と参照権限だけ持つアカウントを分ける、操作できるNamespaceの範囲を絞るなど）やK8sクラスタ内のPodからkube-apiserverへ通信したい場合（例えば、とあるPodからkubectlコマンドを打鍵して、Podの一覧を取得するなど）などに用います。
 
 RBACに関するリソースは4つが存在します。
@@ -77,7 +77,7 @@ Roleとの紐づけをRoleBinding、ClusterRoleとの紐づけをClusterRoleBind
 
 1. 作成したServiceAccount,Role,RoleBindingを確認してください。
 
-1. Deploymentのマニフェストを修正しServiceAccount:get-podでPodを起動するように修正しデプロイしなおしてください。
+1. Deploymentのマニフェストを修正しServiceAccount:get-podでPodを起動するように修正し再デプロイしてください。
 
 1. デプロイしたPodに「kubectl get pod」の追加コマンドを発行しコマンドが`実行できる`ことを確認してください。
 

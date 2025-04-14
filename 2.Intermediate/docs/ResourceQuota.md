@@ -4,7 +4,7 @@
 
 # ResourceQuota
 
-ResourcesQuotaはNamespaceに対しHWリソース上限や作成できるK8sのオブジェクト数に制限を設けるリソースです。Namespaceに属します。
+ResourceQuotaはNamespaceに対しHWリソース上限や作成できるK8sのオブジェクト数に制限を設けるリソースです。Namespaceに属します。
 LimitRangeとは違い、Namespaceに対する制限です。
 
 # 演習
@@ -27,7 +27,7 @@ LimitRangeとは違い、Namespaceに対する制限です。
        - resources.limitsに以下を設定
          - cpu: 100m
          - memory: 100Mi
-       - reqources.requestsに以下を設定
+       - resources.requestsに以下を設定
          - cpu: 100m
          - memory: 50Mi
 
@@ -84,7 +84,7 @@ LimitRangeとは違い、Namespaceに対する制限です。
 
 以上のようにNamespace内のK8sオブジェクト数に制限を設けることができます。
 
-Namespace単位で制限をかけられるのでLimitRangeよりも手っ取り早くリソース制限をかけることができます。
+Namespace単位で制限をかけられるのでLimitRangeよりも簡単にリソース制限をかけることができます。
 しかし、各オブジェクト単位のリソース量制限はできため、その場合はLimitRangeを使います。
 このように、ResourceQuotaはたとえば1つのK8sクラスタを複数のチームで共有利用する場合などに使える機能です。
 

@@ -33,7 +33,7 @@ Ingressを使い複数のサービスをhttpで公開します。
          - バックエンドを上記ServiceのPort:80に指定
 
 1. インターネットに接続可能でcurlが実行できる端末から以下コマンドを発行し、それぞれのServiceにIngressを経由してアクセスできていることを確認してください。  
-  （プロキシ経由のアクセスだとリクエストがキャッシュされて表示が変わらないかもしれ。その場合はプロキシを通らない経路で試してみるとうまくいくかもしれない。）
+  （プロキシ経由のアクセスだとリクエストがキャッシュされて表示が変わらないかもしれません。その場合はプロキシを通らない経路で試してみるとうまくいくかもしれない。）
 
    ```bash
    curl -H "Host:test-1.k8s.practice.local" http://<nginx ingress用LBのDNS名>
@@ -46,7 +46,7 @@ Ingressを使い複数のサービスをhttpで公開します。
 
 1. Nginx Ingress Controllerのログを確認し、上記2つのリクエストがIngress Controllerを経由していることを確認する。
 
-1. 上記手順ではHTTPのリクエストヘッダにホスト名を入れることで接続しましたが。しかし本来であればホスト名である「test-1.k8s.practice」および「test-2.k8s.practice」をRoute53などのDNSにレコード追加して動作確認するべきです。以下を実行してください。
+1. 上記手順ではHTTPのリクエストヘッダにホスト名を入れることで接続しました。しかし、本来であればホスト名である「test-1.k8s.practice」および「test-2.k8s.practice」をRoute53などのDNSにレコード追加して動作確認するべきです。以下を実行してください。
    1. VPC内部限定のプライベートホストゾーン「k8s.practice.local」を作成する
    1. 「*.k8s.practice.local」の宛先をNginx Ingress用LBとするCNAMEレコードを作成する。
    1. 以下のコマンドをVPC内のEC2インスタンス等から実行する。(Cloud9を使用するのが簡単でしょう。)
@@ -70,7 +70,7 @@ Ingressを使い複数のサービスをhttpで公開します。
 
 1. AWS ACMに自己証明書を登録してください。
 
-1. （先の手順で使用した）VPC内のEC2に自己証明書のcrtファイルを`信頼されたルート証明書`として登録してください。
+1. （先の手順で使用した）VPC内のEC2に自己証明書の証明書ファイルを`信頼されたルート証明書`として登録してください。
 
 1. Nginx Ingress用のmanifestを修正し、TLSで使用する証明書を設定してください。（ヒント：証明書はACMのarnを指定します。）
 
@@ -78,7 +78,7 @@ Ingressを使い複数のサービスをhttpで公開します。
 
    ```bash
    curl https://test-1.k8s.practice.local
-   curl https://test-1.k8s.practice.local
+   curl https://test-2.k8s.practice.local
    ```
 
 1. 作成したリソースを削除してください。

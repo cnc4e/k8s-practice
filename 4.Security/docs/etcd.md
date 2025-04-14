@@ -5,7 +5,7 @@
 
 # etcdの暗号化
 
-etcdの中にはSecretの値など機密情報が含まれます。etcdに直接アクセスできるとそういった機密情報を盗み見ることができます。etcdを暗号化すれば直接アクセスしてもetcd内の情報を見ることができなくなります。
+etcdの中にはSecretの値など機密情報が含まれます。etcdに直接アクセスできるとそういった機密情報を閲覧することができます。etcdを暗号化すれば直接アクセスしてもetcd内の情報を閲覧できなくなります。
 
 ## etcd内のデータ参照
 
@@ -13,7 +13,7 @@ etcdの中にはSecretの値など機密情報が含まれます。etcdに直接
 
 2. masterノードからetcdctlを使ってetcdにアクセスし、上記作成したSecretの中身を表示してください。Secretの内容が見えてしまうことを確認してください。（ヒント①：[etcdの操作](https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#securing-communication)、ヒント②：etcdへ接続するための証明書情報はkube-apiserverがマウントしています。ヒント③：etcd内のSecretリソースのパスは`/registry/secrets/<ns名>/<secret名>`です。）
 
-ここで作成したsecretは消さないでおいてください、後ほどまた使います。
+ここで作成したSecretは削除せずに残しておいてください。後ほどまた使います。
 
 ## etcdの暗号化
 
@@ -28,7 +28,7 @@ etcdの中にはSecretの値など機密情報が含まれます。etcdに直接
 - kind: EncryptionConfiguration
 - 暗号化対象はSecret
 - 暗号化の方式はaescbc,identity。必ずaescbcを上に書くこと
-- 暗号化のキー名とシークレットキーの値は任意で設定。ただし、シークレットキーはbase64エンコードすること。エンコード前の文字数は16、24、32文字のいずれかであること。
+- 暗号化のキー名とシークレットキーの値は任意で設定。ただし、シークレットキーはBase64エンコードすること。エンコード前の文字数は16、24、32文字のいずれかであること。
 
 3. masterノードにあるkube-apiserverのマニフェストをバックアップとして/etc/kubernetes/manifests/以外にコピーしてください。
    
@@ -46,7 +46,7 @@ etcdの中にはSecretの値など機密情報が含まれます。etcdに直接
 
 ## etcdの復号化
 
-復号にするにはEncryptionConfigurationのproviderの順番を入れ替えます。その後再度Secretを再作成すれば復号化できます。
+復号化するにはEncryptionConfigurationのproviderの順番を入れ替えます。その後再度Secretを再作成すれば復号化できます。
 
 1. EncryptionConfigurationのマニフェストを修正しaescbcとidentityの順番を逆にしてください。（identityが一番上）
 

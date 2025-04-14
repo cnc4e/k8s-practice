@@ -7,11 +7,11 @@
 
 kube-apiserverに監査ログを設定できます。監査ログを設定することでクラスタに対して誰が何をしたか記録できます。
 
-1. 以下イベントをそれぞれ指定した監査レベルで記録するルールファイルをmasterノード上に作成してください。（[ヒント](https://kubernetes.io/docs/tasks/debug-application-cluster/audit/)）
+1. 以下イベントをそれぞれ指定した監査レベルで記録するルールファイルをコントロールプレーンノード上に作成してください。（[ヒント](https://kubernetes.io/docs/tasks/debug-application-cluster/audit/)）
 
 - `RequestReceived`ステージのあらゆるイベントを記録しない。
 - あらゆるNamespaceにあるSecretをGetするイベント発生時、Metadataレベルで記録
-- ns:testにあるすべてのPodのlogに対するイベント発生時、Requestレベルで記録
+- ns:testにあるすべてのPodのログに対するイベント発生時、Requestレベルで記録
 - ns:testにあるpod:testに対するイベント発生時、RequestResponseレベルで記録
 - 上記以外記録しない。
 
@@ -23,7 +23,7 @@ kube-apiserverに監査ログを設定できます。監査ログを設定する
 
 5. ns:test以外でPodを作成しPodのログを確認してください。
 
-6. masterノードの`/var/log/kube-api/audit.log`を確認してください。上記操作がログに出力されていないことを確認してください。
+6. masterノードの`/var/log/kube-api/audit.log`を確認してください。これらの操作がログに出力されていないことを確認してください。
 
 7. ns:testのすべてのリソース、任意のnsに作成したsecret、podを削除してください。
 

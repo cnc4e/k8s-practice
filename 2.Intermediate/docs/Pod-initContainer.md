@@ -2,11 +2,11 @@
 
 ---
 
-# Pod設定 initContainer
+# Pod設定 initContainers
 
 Pod内のメインコンテナを起動する前に一時的なコンテナをPod内で起動できます。
-例えばメインコンテナ起動前の準備を実装したりできます。ポイントとしてはinitContainerで起動するコンテナはあくまでもメインコンテナ起動前の一時的なものであることです。
-そのため、initContainerで指定するcommandはexit0で終わるものを指定しましょう。
+例えばメインコンテナ起動前の準備を実装したりできます。ポイントとしてはinitContainersで起動するコンテナはあくまでもメインコンテナ起動前の一時的なものであることです。
+そのため、initContainersで指定するcommandは exit 0 で終わるものを指定しましょう。
 
 # 演習
 
@@ -30,25 +30,25 @@ Pod内のメインコンテナを起動する前に一時的なコンテナをPo
 1. 接続確認に使用するcurlコマンドが実行可能なtestpodを作成し、testpodから`Service:nginx-svc`に対して接続確認をしてください。  
    （`Nginxデフォルトのindex.htmlが表示されること`）
 
-1. マニフェストを以下の内容に修正し、デプロイしてください。なお、initContainerについては[公式ドキュメント][1]を参考にしてください。
+1. マニフェストを以下の内容に修正し、デプロイしてください。なお、initContainersについては[公式ドキュメント][1]を参考にしてください。
 
    - 要件
      - Deployment
        - Pod
          - nginx
            - volume:index-htmlを`/usr/share/nginx/html`にマウント
-         - initContainer
+         - initContainers
            - 名前`init`
            - イメージは`busybox`
-           - commandは`['/bin/sh','-c','echo initContainer de settei sita noda > /tmp/   index.html']`
+           - commandは`['/bin/sh','-c','echo initContainer de settei sita noda > /tmp/ index.html']`
            - volume:index-htmlを`/tmp`にマウント
          - volume
            - 名前は`index-html`
            - volumeプラグインは`emptyDir`を指定
 
-1. Podの詳細を確認し、init Containers の箇所を確認してください。また、eventを確認しコンテナinitがメインコンテナの前に起動したことを確認してください。
+1. Podの詳細を確認し、initContainers の箇所を確認してください。また、eventを確認しコンテナinitがメインコンテナの前に起動したことを確認してください。
 
-1. testpodから`Service:nginx-service/index.html`に対して接続確認をしてください。（`initContainerで修正したindex.htmlが表示されること`）
+1. testpodから`Service:nginx-svc/index.html`に対して接続確認をしてください。（`initContainerで修正したindex.htmlが表示されること`）
 
 1. 作成したリソースを削除してください。
 

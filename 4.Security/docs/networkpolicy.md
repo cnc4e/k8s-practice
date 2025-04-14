@@ -7,12 +7,12 @@
 
 ネットワークポリシーはK8s内のSecurityGroupのようなものです。
 
-1. 以下を満たリソース群をデプロイしてください。
+1. 以下を満たすリソース群をデプロイしてください。
 
 - Namespaceを2つ。名前は`public`と`private`
-- 各Namespaceにはすべてのインバウンドとアウトバウンドを禁止するNetworkPolicyがついている。ただし、CoreDNSと通信するためTCP/UDP53のアウトバウンドは許可する
+- 各Namespaceにはすべてのインバウンドとアウトバウンドを禁止するNetworkPolicyがついている。ただし、CoreDNSと通信するためTCP/UDP 53のアウトバウンドは許可する
 - 各Namespaceには2つのPodがある。すべてnginxを動かす。名前は`front`と`back`でそれぞれ`app=<Pod名>`のラベルがついている
-- 各Podの/usr/share/nginx/html/index.htmlはどのNamespaceのどのDeploymentか判別できる内容にする。(例：public-fornt、private-back等)
+- 各Podの/usr/share/nginx/html/index.htmlはどのNamespaceのどのDeploymentか判別できる内容にする。(例：public-front、private-back等)
 - 各PodはPod名と同じ名前のService経由でport:80にアクセスできる。
 - 各Namespace内で`front`から`back`への通信は許可する。
 - `public`の`front`から`private`の`front`への通信は許可する。
@@ -49,19 +49,19 @@ kubectl exec -n private back -- curl -s -m 1 142.250.191.142 2>/dev/null
 |front.public|back.public|○|
 |front.public|front.private|○|
 |front.public|back.private|✗|
-|front.public|それ以外|✗|
+|front.public|その他|✗|
 |back.public|front.public|✗|
 |back.public|front.private|✗|
 |back.public|back.private|✗|
-|back.public|それ以外|✗|
+|back.public|その他|✗|
 |front.private|front.public|○|
 |front.private|back.public|○|
 |front.private|back.private|○|
-|front.private|それ以外|✗|
+|front.private|その他|✗|
 |back.private|front.public|○|
 |back.private|back.public|○|
 |back.private|front.private|✗|
-|back.private|それ以外|✗|
+|back.private|その他|✗|
 
 3. Pod、NetworkPolicy、Namespaceを削除してください。
 
