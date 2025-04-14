@@ -14,7 +14,7 @@ Podはそれ自体によって自動復旧しません。
 `複数のPodを作成・管理し、レプリケーションやスケールアウト、自動復旧`といった機能を提供する
  `Pod Controller`と呼ばれるAPIリソース群がK8sには用意されています。
 
-Pod Controllerには次のようなものがあります。
+Podコントローラーには次のようなものがあります。
 （全てWorkloads APIsのカテゴリに所属します。）
 
 - ReplicaSet
@@ -66,7 +66,7 @@ spec:
 Deploymentは複数のReplicaSetを管理することで、
 ローリングアップデートやロールバックなどの機能を実現するAPIリソースです。
 
-DeploymentがReplicaSetを管理し、ReplicaSetがPodを管理するという３層構造になっています。
+DeploymentがReplicaSetを管理し、ReplicaSetがPodを管理するという3層構造になっています。
 
 ![Deployment](../images/deployment-base.drawio.svg)
 
@@ -92,34 +92,39 @@ K8sではもっとも推奨されているコンテナの起動方法です。
 
 1. 次のmanifestを使用して、Deployment:nginxを作成する。
 
-   ``` yml
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     name: nginx
-     labels:
-       app: nginx
-   spec:
-     replicas: 1
-     selector:
-       matchLabels:
-         app: test
-     template:
-       metadata:
-         labels:
-           app: test
-       spec:
-         containers:
-         - name: nginx
-           image: nginx:1.22
-       ```
+``` yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.22
+```
 
-1. Deployment、ReplicaSet、Podそれぞれのオブジェクト一覧を表示する。
-1. 作成したnginx-XXXXXXという名前の`Pod`を削除する。(Deploymentは消してはダメ！)
-1. Podのオブジェクト一覧を表示する。(さきほどとは違う名前のPodが作成されていることを確認してください)
-1. manifestを修正し、Deploymentのreplicasを`2`に修正し、修正を適用する。
-1. Podのオブジェクト一覧を表示する。(Podの数が増えていることを確認してください)
-1. (次章`Service-Cluster`で作成したDeployment:nginxを使用します。次章を実施しない場合はDeployment:nginxを削除してください。)
+2. Deployment、ReplicaSet、Podそれぞれのオブジェクト一覧を表示する。
+   
+3. 作成したnginx-XXXXXXという名前の`Pod`を削除する。(Deploymentは消してはダメ！)
+
+4. Podのオブジェクト一覧を表示する。(さきほどとは違う名前のPodが作成されていることを確認してください)
+
+5. manifestを修正し、Deploymentのreplicasを`2`に修正し、修正を適用する。
+
+6. Podのオブジェクト一覧を表示する。(Podの数が増えていることを確認してください)
+
+7. (次章`Service-Cluster`で作成したDeployment:nginxを使用します。次章を実施しない場合はDeployment:nginxを削除してください。)
 
 ## チュートリアル2: ローリングアップデートする
 
@@ -128,43 +133,43 @@ nginxのバージョンを1.22から1.23へアップデートします。
 
 1. 次のmanifestを使用して、Deployment:nginx-rollupを作成する。
 
-   ``` yml
-   apiVersion: apps/v1
-   kind: Deployment
+``` yml
+piVersion: apps/v1
+ind: Deployment
+etadata:
+ name: nginx-rollup
+ labels:
+   app: nginx-rollup
+pec:
+ replicas: 2
+ selector:
+   matchLabels:
+     app: nginx-rollup
+ template:
    metadata:
-     name: nginx-rollup
      labels:
        app: nginx-rollup
    spec:
-     replicas: 2
-     selector:
-       matchLabels:
-         app: test
-     template:
-       metadata:
-         labels:
-           app: test
-       spec:
-         containers:
-         - name: nginx
-           image: nginx:1.22
-           lifecycle:
-             preStop:
-               exec:
-                 command: ['sh', '-c', 'sleep 30']
-         initContainers:
-         - name: busybox
-           image: busybox:1.28
-           command: ['sh', '-c', 'sleep 30']
-    ```
+     containers:
+     - name: nginx
+       image: nginx:1.22
+       lifecycle:
+         preStop:
+           exec:
+             command: ['sh', '-c', 'sleep 30']
+     initContainers:
+     - name: busybox
+       image: busybox:1.28
+       command: ['sh', '-c', 'sleep 30']
+```
 
-1. Deployment、ReplicaSet、Podそれぞれのオブジェクト一覧を表示する。
+2. Deployment、ReplicaSet、Podそれぞれのオブジェクト一覧を表示する。
 
-1. manifestの`nginx:1.22`を`nginx:1.23`へと修正し、修正を適用する。
+3. manifestの`nginx:1.22`を`nginx:1.23`へと修正し、修正を適用する。
 
-1. Deployment、ReplicaSet、Podそれぞれのオブジェクト一覧を繰り返し表示する。（順番にPodが再作成されることを確認してください。）
+4. Deployment、ReplicaSet、Podそれぞれのオブジェクト一覧を繰り返し表示する。（順番にPodが再作成されることを確認してください。）
 
-1. Deployment:nginx-rollupを削除する。
+5. Deployment:nginx-rollupを削除する。
 
 以上で本チュートリアルは終了です。
 

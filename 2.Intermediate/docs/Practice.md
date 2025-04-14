@@ -115,7 +115,7 @@
     - 名前は`sbdemo-ap`
   - PersistentVolumeClaim
     - 名前は`sbdemo-nfs-pvc`
-    - Namespaceは`spdemo-ap`
+    - Namespaceは`sbdemo-ap`
     - storageClassNameは`指定しない`
     - selectorは`role: nfs-pv`
     - accessModesは`ReadWriteOnce`
@@ -125,7 +125,7 @@
     - Namespaceは`sbdemo-ap`
     - 以下のKey-Valueをdataとして持つ
       - SPRING_PROFILES_ACTIVE: "prd"
-      - DB_URL: "jdbc:postgresql://sbdemo-postgres-service.sbodemo-db:5432/demodb?   user=postgres&password=postgres"
+      - DB_URL: "jdbc:postgresql://sbdemo-postgres-service.sbdemo-db:5432/demodb?   user=postgres&password=postgres"
       - PIC_DIR: "/opt/picDir"
       - REDIS_HOST: "sbdemo-redis-service.sbdemo-redis"
       - REDIS_PORT: "6379"
@@ -254,7 +254,7 @@
 
 ## 問題7: 接続確認
 
-インターネット接続可能な端末のwebブラウザからさきほど確認したsbdemo-nginx-lbのEXTERNAL-IPにアクセスしてください。  
+インターネット接続可能な端末のWebブラウザからさきほど確認したsbdemo-nginx-lbのEXTERNAL-IPにアクセスしてください。  
 問題1～問題6の構築が正常に完了している場合、次のログイン画面が表示されますのでログインしてみましょう。
 ログイン情報は`ID/PW=admin/111111`です。
 

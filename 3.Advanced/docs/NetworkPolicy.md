@@ -4,15 +4,14 @@
 
 # NetworkPolicy
 
-NetworkPolicyはK8sクラスタ内で使えるセキュリティグループの様なものです。
+NetworkPolicyはK8sクラスタ内で使えるセキュリティグループのようなものです。
 指定したラベルが付与されたPodやNamespaceに対するインバウンドおよびアウトバウンドの通信制限を設けることができます。
 デフォルトの状態では同一クラスタ内のPodはNamespaceが違っても制限なしに相互アクセス可能です。
 例えばNamespaceで顧客ごとに分割をしていても、ネットワークアクセス可能だとあまり意味がありません。
-その様な場合にNetworkPolicyでアクセスを制限すればよりセキュアな構成にできます。
+そのような場合にNetworkPolicyでアクセスを制限すればよりセキュアな構成にできます。
 
 なお、NetworkPolicyはK8sの標準リソースですが、使用するにはクラスタのネットワークが対応したCNIプラグインで構成されている必要があります。
 例えばEKSの場合、デフォルトでは「Amazon VPC CNI plugin for Kubernetes」を使用していますが、2020/03時点で「Amazon VPC CNI plugin for Kubernetes」はNetworkPolicyに対応していません。
-（たしかGKEとAKSは標準のCNIで対応しているはず。）
 NetworkPolicyに対応したCNIプラグインとしてはCalicoなどがあります。
 
 ## Calicoのデプロイ
@@ -82,13 +81,13 @@ Calicoをクラスタにデプロイします。[公式の手順][1]を参考に
         - 1セット目と基本同じで2セット目のNamespaceからのインバウンド通信のみを許可する。
 
 1. 各NamespaceのPod:curlから各NamespaceのService:nginxに`curl -s -m 10`で通信してください。-mはタイムアウト値(秒)を指定するオプションです。  
-   Namespaceを跨いだ通信は失敗することを確認してください。
+   Namespaceをまたいだ通信は失敗することを確認してください。
 
 1. 作成した`NetworkPolicy`を削除してください。
 
 ## NetworkPolicy(Pod単位)
 
-上記のようにNetworkPolicyで通信制御をNamespaceにかけることができる。さらに、同じNamespace内でもPodごとに通信制御をかけることもできます。
+上記のようにNetworkPolicyで通信制御をNamespaceに適用できる。さらに、同じNamespace内でもPodごとに通信制御をかけることもできます。
 
 1. 以下を満たすマニフェストを作成しデプロイしてください。
 
@@ -101,9 +100,9 @@ Calicoをクラスタにデプロイします。[公式の手順][1]を参考に
         - 対象は1つ目のDeployment
         - 3つ目のDeploymentのみ通信を許可する。
 
-1. 2つ目と3つ目のDeploymentでデプロイしたPodからService:nginxに対して通信してください。3つ目でデプロイしたPodからのみアクセスできることを確認してください。（もしできてしまう場合、同一Namespaceからの通信を許可するNetworkPolicyが残っていないか確認し、残っていれば削除する）
+2. 2つ目と3つ目のDeploymentでデプロイしたPodからService:nginxに対して通信してください。3つ目でデプロイしたPodからのみアクセスできることを確認してください。（もしできてしまう場合、同一Namespaceからの通信を許可するNetworkPolicyが残っていないか確認し、残っていれば削除する）
 
-1. 作成したリソースを削除してください。
+3. 作成したリソースを削除してください。
 
 具体的な操作およびその結果に関する回答例は[こちら](../ans/NetworkPolicy_answer.md)にあります。
 具体的な操作方法がわからなかった場合や、想定した結果にならなかった場合などに参照してください。

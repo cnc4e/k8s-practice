@@ -124,7 +124,7 @@
    metadata:
      name: starwars-ep
    data:
-      EP1: The Python Menace
+      EP1: The Phantom Menace
       EP2: Attack of the Clones
       EP3: Revenge of the Sith
       EP4: A New Hope
@@ -220,10 +220,10 @@
    ```bash
    # 実行結果
    $ kubectl logs starwars-title-8749d55ff-mplsz
-   Star Wars no title ichiran \n The Python Menace \n Attack of the Clones \n Revenge of the Sith \n A New Hope \n  \n Return of the Jedi \n The Force Awakens \n The Last Jedi \n The Rise of Skywalker
+   Star Wars no title ichiran \n The Phantom Menace \n Attack of the Clones \n Revenge of the Sith \n A New Hope \n  \n Return of the Jedi \n The Force Awakens \n The Last Jedi \n The Rise of Skywalker
 
    $ kubectl logs starwars-koukai-f6dff5457-rx575
-   Star Wars no koukai jyun \n A New Hope \n  \n Return of the Jedi \n The Python Menace \n Attack of the Clones \n Revenge of the Sith \n The Force Awakens \n The Last Jedi \n The Rise of Skywalker
+   Star Wars no koukai jyun \n A New Hope \n  \n Return of the Jedi \n The Phantom Menace \n Attack of the Clones \n Revenge of the Sith \n The Force Awakens \n The Last Jedi \n The Rise of Skywalker
    ```
 
 1. 作成したリソースを削除してください。

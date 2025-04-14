@@ -5,7 +5,7 @@
 
 # PodSecurityPolicyによるポリシー定義
 
-PodSecurityPolicyを使うとPodのセキュリティ設定を強制できます。ただし、PodSecurityPolicyはデフォルトで使用できないためkube-apiserverの設定で有効にします。なお、PodSecurityPolicyは将来的に(v1.25で)削除される予定です。ポリシーの定義はOPAなど別ツールを使用したほうが良いでしょう。
+PodSecurityPolicyを使うとPodのセキュリティ設定を強制できます。ただし、PodSecurityPolicyはデフォルトで使用できないためkube-apiserverの設定で有効にします。なお、PodSecurityPolicyは将来的に(v1.25で)削除される予定です。ポリシーの定義はOPAなど別ツールを使用した方が良いでしょう。
 
 1. kube-apiserverの設定を修正しPodSecurityPolicyを使用できるようにしてください。
 
@@ -19,15 +19,15 @@ PodSecurityPolicyを使うとPodのセキュリティ設定を強制できます
 
 3. 上記作成したPodSecurityPolicyを使用する`ClusterRole`を作成してください。
 
-4. ns:testを作成してください。
+4. Namespace:testを作成してください。
 
-5. ns:test内のすべてのServiceAccountで上記作成したPodSecurityPolicyを使用できるようにしてください。
+5. Namespace:test内のすべてのServiceAccountで上記作成したPodSecurityPolicyを使用できるようにしてください。
 
-6. ns:testでnginxのPodを起動してください。起動できないことを確認してください。
+6. Namespace:testでnginxのPodを起動してください。起動できないことを確認してください。
    
-7. 原因を特定しns:testでnginxを起動できるようにマニフェストを修正しデプロイしてください。（ヒント：[セキュリティコンテキストの設定](securitycontext.md)を参考にすると良いです。）
+7. 原因を特定しNamespace:testでnginxを起動できるようにマニフェストを修正しデプロイしてください。（ヒント：[セキュリティコンテキストの設定](securitycontext.md)を参考にすると良いです。）
 
-8. 作成したPod、RBAC、Namespaec、PSPをすべて削除してください。
+8. 作成したPod、RBAC、Namespace、PSPをすべて削除してください。
 
 9. kube-apiserverの設定を修正しPodSecurityPolicyを無効にしてください。
 

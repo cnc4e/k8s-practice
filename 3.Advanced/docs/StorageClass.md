@@ -6,13 +6,13 @@
 
 以前、[PersistentVolume](../../2.Intermediate/docs/PersistentVolume.md)の章では、デフォルトのStorageClassを使用してDVPを行いました。
 StorageClassはストレージの種類を定義したリソースです。EKSの場合はEBS(gp2)のStorageClassがデフォルトで定義されています。
-EBS(gp2)以外のディスクタイプを使用してDVPを行うには追加でStorageClassを定義し、PVCでそのStorageClassを指定することで、使用可能です。
+EBS(gp2)以外のディスクタイプを使用してDVPを行うには追加でStorageClassを定義し、PVCでそのStorageClassを指定することで使用できます。
 
 なお、StorageClassとして定義可能なストレージサービスには制限があります。
-Provisionerというストレージサービスと連携をとるための機能が提供されているもののみになります。
+Provisionerというストレージサービスと連携をとるための機能が提供されているものに限られます。
 K8sにはデフォルトでAWS EBSやAzure Diskなど代表的なストレージサービスのProvisionerが組み込まれています。
 デフォルトで組み込み済のProvisionerは[公式ドキュメント][1]で確認できます。
-組み込まれていないストレージサービス（たとえばAWS EFSなど）を使用してDVPを行いたい場合は、利用者でProvisionerを導入し、StorageClassを定義します。
+組み込まれていないストレージサービス（たとえばAWS EFSなど）を使用してDVPを行いたい場合は、利用者がProvisionerを導入し、StorageClassを定義します。
 
 # 演習
 
@@ -26,7 +26,7 @@ K8sにはデフォルトでAWS EBSやAzure Diskなど代表的なストレージ
      - Deployment
        - イメージは何でもよい
        - volumeMountsで2つのボリュームを別々の適当なpathにマウントしてください。
-       - volumeで以下2つのpvcをそれぞれ指定してください。
+       - volumeで以下2つのPVCをそれぞれ指定してください。
          - normal-disk-pvc
          - fast-disk-pvc
      - PVC

@@ -7,13 +7,13 @@
 
 ## ダッシュボードのデプロイ
 
-K8sにはダッシュボードというWeb UIがある。k8s公式は[こちら](https://kubernetes.io/ja/docs/tasks/access-application-cluster/web-ui-dashboard/)、Gitレポジトリは[こちら](https://github.com/kubernetes/dashboard)。このダッシュボードのセキュリティについて知る。
+K8sにはダッシュボードというWeb UIがあります。k8s公式は[こちら](https://kubernetes.io/ja/docs/tasks/access-application-cluster/web-ui-dashboard/)、Gitレポジトリは[こちら](https://github.com/kubernetes/dashboard)。このダッシュボードのセキュリティについて知る。
 
 1. ダッシュボードをクラスタにデプロイしてください。
 
 2. ダッシュボードのserviceをtype:NodePortに修正してください。
 
-3. workerのパブリックIP:NodePortでダッシュボードに`https`でアクセスしてください。**接続元の環境によってはNodePort(30000-32767)のアクセスが閉じられてアクセスできないかもしれません。アクセス元を替えてみてください。**
+3. ノードのパブリックIP:NodePortでダッシュボードに`https`でアクセスしてください。**接続元の環境によってはNodePort(30000-32767)のアクセスが閉じられてアクセスできないかもしれません。アクセス元を替えてみてください。**
 
 4. ログイン画面ではトークンを選択し、ダッシュボードを起動しているServiceAccountのトークンでログインしてください。(ヒント：ServiceAccountのトークンはSecretにあります。)
 
@@ -27,7 +27,7 @@ K8sにはダッシュボードというWeb UIがある。k8s公式は[こちら]
 
 デフォルトで安全ですがセキュリティを弱めるやってはいけない設定を試してみます。
 
-1. ダッシュボードのDeplymentを以下の様に修正してください。（ヒント：[ダッシュボードのパラメータ](https://github.com/kubernetes/dashboard/blob/master/docs/common/dashboard-arguments.md)）
+1. ダッシュボードのDeploymentを以下のように修正してください。（ヒント：[ダッシュボードのパラメータ](https://github.com/kubernetes/dashboard/blob/master/docs/common/dashboard-arguments.md)）
 
 - auto-generate-certificatesを削除
 - ダッシュボードPodのHTTP公開ポートとして9090を設定
@@ -36,15 +36,15 @@ K8sにはダッシュボードというWeb UIがある。k8s公式は[こちら]
 - livenessProbeを削除
 - containerPortを9090に変更
 
-2. ダッシュボードのServiceも修正しHTTPでもアクセスできる様に修正してください。
+2. ダッシュボードのServiceも修正しHTTPでもアクセスできるように修正してください。
 
-3. workerのパブリックIP:NodePortでダッシュボードに`http`でアクセスしてください。**接続元の環境によってはNodePort(30000-32767)のアクセスが閉じられてアクセスできないかもしれません。アクセス元を替えてみてください。**
+3. ノードのパブリックIP:NodePortでダッシュボードに`http`でアクセスしてください。**接続元の環境によってはNodePort(30000-32767)のアクセスが閉じられてアクセスできないかもしれません。アクセス元を替えてみてください。**
 
 4. ログイン画面はサインインボタンの横にある`スキップ`を選択してください。これでダッシュボードにログインできてしまい、クラスタ内の情報も見れてしまうことを確認してください。
 
 5. ダッシュボード用に作成したRoleBinding(またはClusterRoleBinding)とダッシュボード関連のリソースをすべて削除してください。
 
-この様に設定次第ではhttpでのアクセスや認証なしのログインができてしまいます。とくにインターネット経由でアクセスできる環境の場合、このような設定はしないようにしましょう。
+このように設定次第ではhttpでのアクセスや認証なしのログインができてしまいます。とくにインターネット経由でアクセスできる環境の場合、このような設定はしないようにしましょう。
 
 [*解答例*](../ans/dashboard.md)  
 

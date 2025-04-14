@@ -6,7 +6,7 @@
 
 Cluster Autoscaler（以下、CA）は自動でワーカーノード数を調整するアドオン機能です。
 CAはK8s内にコントローラの役割を担うPodをデプロイして機能します。スケールアウトはHWリソースが足りずにどこにもスケジュールできないPod（STATUS:Pending）が発生した際に行われます。
-スケールインはクラスタ全体のHWリソース割当量をみて行われます。なお、CAはEKS/AKS/GKEなど対応したクラウドプロバイダでのみ使用可能です。
+スケールインはクラスタ全体のHWリソース割当量を基にして行われます。なお、CAはEKS/AKS/GKEなど対応したクラウドプロバイダでのみ使用可能です。
 また、ワーカーノードをAWS AutoScalingなどノード台数を柔軟に変更できる機能で展開していないと使用できません。
 
 # 演習
@@ -50,7 +50,7 @@ CAはK8s内にコントローラの役割を担うPodをデプロイして機能
 
 1. 上記作成したDeploymentのreplica数を1つずつ増やし、STATUS:PendingのPodが出るまで続けてください。
 
-1. 「kubectl get node」および「kubectl get pod」をwatch等で監視し、Nodeが増えてSTATUS:PendingのPodがrunningになることを確認してください。
+1. 「kubectl get node」および「kubectl get pod」をwatch等で監視し、Nodeが増えてSTATUS:PendingのPodがRunningになることを確認してください。
 
    > :information_source:  
    >
@@ -65,7 +65,7 @@ CAはK8s内にコントローラの役割を担うPodをデプロイして機能
 1. 「kubectl get node」および「kubectl get pod」をwatch等で監視し、Nodeが減ることを確認してください。
 
    > :information_source:  
-   > デフォルトではスケールアウト後のスケールインは`10分以上`経過しないと行われません。
+   > デフォルトではスケールアウト後のスケールインは`10分以上`経過しないと実行されません。
    > 経過時間が知りたい場合はpod/cluster-autoscalerのlogを確認してみると良いでしょう。`ノード名 was unneeded for 時間`で確認できます。
    > cf.) scale_down.go:829] ip-192-168-12-24.us-west-1.compute.internal was unneeded for 9m53.457855769s
 
