@@ -8,7 +8,7 @@
 
 [1]:https://github.com/dayan888/springdemo_k8s
 
-![構成図](./images/springdemo_overview.drawio.svg)
+![構成図](../images/springdemo_overview.drawio.svg)
 
 ## 問題1: NFSサーバ
 
