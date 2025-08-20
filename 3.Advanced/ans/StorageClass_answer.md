@@ -31,9 +31,10 @@
    kind: StorageClass
    metadata:
      name: io1
-   provisioner: kubernetes.io/aws-ebs
+   provisioner: ebs.csi.aws.com
    parameters:
      type: io1
+     iops: "3000"
    reclaimPolicy: Delete
    ---
    apiVersion: apps/v1

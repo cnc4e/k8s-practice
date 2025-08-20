@@ -147,20 +147,20 @@
 1. overlay/dev/およびoverlay/prod/に以下を満たすマニフェストおよびkustomization.yamlを作成してください。
 
    - 要件
-     - prod
-       - baseは../../base
-       - 作成するオブジェクトのプレフィックスに`prod-`をつける
-       - 作成するオブジェクトに`env: prod`のラベルを追加
-       - ConfigMap:env-configを上書き（patches）し`ENV: prod`に変更してください。
      - dev
        - baseは../../base
        - 作成するオブジェクトのプレフィックスに`dev-`をつける
        - 作成するオブジェクトに`env: dev`のラベルを追加
        - ConfigMap:env-configを上書き（patches）し`ENV: dev`に変更してください。
+     - prod
+       - baseは../../base
+       - 作成するオブジェクトのプレフィックスに`prod-`をつける
+       - 作成するオブジェクトに`env: prod`のラベルを追加
+       - ConfigMap:env-configを上書き（patches）し`ENV: prod`に変更してください。
 
    【回答例】
 
-   ```yml
+    ```yml
    # manifest (prod)
    ## configmap.yaml
    apiVersion: v1
@@ -174,17 +174,18 @@
    ```yml
    # manifest (prod)
    ## kustomization.yaml
-   bases:
+   resources:
      - ../../base
    patches:
      - configmap.yaml
 
    namePrefix: prod-
-   commonLabels:
-     env: prod
+   labels:
+     - pairs:
+         env: prod
    ```
 
-   ```yml
+      ```yml
    # manifest (dev)
    ## configmap.yaml
    apiVersion: v1
@@ -196,19 +197,20 @@
    ```
 
    ```yml
-   # manifest (prod)
+   # manifest (dev)
    ## kustomization.yaml
-   bases:
+   resources:
      - ../../base
    patches:
      - configmap.yaml
 
    namePrefix: dev-
-   commonLabels:
-     env: dev
+   labels:
+     - pairs:
+         env: dev
    ```
 
-1. 以下のコマンドでprodとdevをデプロイしてください。（以下コマンドはkustomizeディレクトリで実行した場合）
+2. 以下のコマンドでprodとdevをデプロイしてください。（以下コマンドはkustomizeディレクトリで実行した場合）
 
    ``` sh
    kubectl apply -k overlay/prod
@@ -229,7 +231,7 @@
    deployment.apps/dev-kustomize-nginx created
    ```
 
-1. 作成したオブジェクトを確認してください。prodおよびdevのPodに対して以下の追加コマンドを発行し、環境変数がオーバーライドできていることを確認してください。
+3. 作成したオブジェクトを確認してください。prodおよびdevのPodに対して以下の追加コマンドを発行し、環境変数がオーバーライドできていることを確認してください。
 
    ```bash
    echo $ENV
@@ -263,7 +265,7 @@
    dev
    ```
 
-1. deploymentを以下の様にオーバーライドして再デプロイしてください。なお、オーバーライドする時のマニフェストは必要最小限の記載にすることに注意してください。
+4. deploymentを以下の様にオーバーライドして再デプロイしてください。なお、オーバーライドする時のマニフェストは必要最小限の記載にすることに注意してください。
 
    - 要件
      - prod
@@ -296,7 +298,7 @@
    ```yml
    # manifest (prod)
    ## kustomization.yaml
-   bases:
+   resources:
      - ../../base
    patches:
      - configmap.yaml
@@ -328,7 +330,7 @@
    ```yml
    # manifest (dev)
    ## kustomization.yaml
-   bases:
+   resources:
      - ../../base
    patches:
      - configmap.yaml
@@ -352,7 +354,7 @@
    deployment.apps/dev-kustomize-nginx configured
    ```
 
-1. 上記オーバーライドした内容が反映されていることを確認してください。
+5. 上記オーバーライドした内容が反映されていることを確認してください。
 
    【回答例】
 
@@ -387,7 +389,7 @@
         (略)
    ```
 
-1. Podの/usr/share/nginx/html/index.htmlの内容を環境変数ENVの値とし、各環境で表示を変えます。kustomize/base配下のみを修正し、実装してください。
+6. Podの/usr/share/nginx/html/index.htmlの内容を環境変数ENVの値とし、各環境で表示を変えます。kustomize/base配下のみを修正し、実装してください。
 
    【回答例】
 
@@ -453,7 +455,7 @@
    deployment.apps/dev-kustomize-nginx configured
    ```
 
-1. curlが実行可能なPodを展開し、prodとdevそれぞれにcurlしてください。各環境名が表示されること
+7. curlが実行可能なPodを展開し、prodとdevそれぞれにcurlしてください。各環境名が表示されること
 
    【回答例】
 
@@ -469,7 +471,7 @@
    dev
    ```
 
-1. 作成したリソースを削除してください。
+8. 作成したリソースを削除してください。
 
    【回答例】
 

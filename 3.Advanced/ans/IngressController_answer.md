@@ -684,7 +684,7 @@
    validatingwebhookconfiguration.admissionregistration.k8s.io/ingress-nginx-admission created
    ```
 
-1. AWSマネジメントコンソール（コマンドでも可）でNginx IngressのELBが作成されていることを確認してください。ELBのタグを見ればNginx Ingressのものか判断できます。
+2. AWSマネジメントコンソール（コマンドでも可）でNginx IngressのELBが作成されていることを確認してください。ELBのタグを見ればNginx Ingressのものか判断できます。
 
    【回答例】
 

@@ -238,13 +238,22 @@
    nginx-rollup-85c9c58db7-wwsrv   1/1     Running   0          2m40s
    ```
 
+1. Podのimageを表示し、`nginx:1.22`であることを確認する。
+
+   【回答例】
+
+   ```bash
+   $ kubectl get pod nginx-rollup-85c9c58db7-bz6ff -o jsonpath="{.spec.containers[*].image}"
+   nginx:1.22
+   ```
+
 1. manifestの`nginx:1.22`を`nginx:1.23`へと修正し、修正を適用する。
 
    【回答例】
 
    ```bash
    # manifest修正
-   $ cat Deployment-rollup.yaml | sed 's/nginx:1.22/nginx:1.23/' > Deployment-rollup.yaml
+   $ cat Deployment-rollup.yaml | sed -i 's/nginx:1.22/nginx:1.23/' Deployment-rollup.yaml
    $
    $ cat Deployment-rollup.yaml
    apiVersion: apps/v1
@@ -350,6 +359,15 @@
    nginx-rollup-785d697996-wlvd6   1/1     Running   0          118s
 
      ※ ローリングアップデートが完了する。
+   ```
+
+1. Podのimageを表示し、`nginx:1.23`であることを確認する。
+
+   【回答例】
+
+   ```bash
+   $ kubectl get pod nginx-rollup-785d697996-p29qw -o jsonpath="{.spec.containers[*].image}"
+   nginx:1.22
    ```
 
 1. Deployment:nginx-rollupを削除する。

@@ -11,7 +11,7 @@
      name: nginx-svc
    spec:
      selector:
-       app: test
+       app: nginx
      ports:
      - protocol: TCP
        port: 80
@@ -29,7 +29,7 @@
      name: nginx-svc
    spec:
      selector:
-       app: test
+       app: nginx
      ports:
      - protocol: TCP
        port: 80
@@ -121,7 +121,7 @@
    </html>
    ```
 
-1. 2つあるPod:nginx-XXXXXそれぞれに含まれるtestコンテナに対して追加コマンドを発行し、コンテナ内の/usr/share/nginx/html/index.htmlを以下内容に修正する。
+1. 2つあるPod:nginx-XXXXXそれぞれに含まれるコンテナに対して追加コマンドを発行し、コンテナ内の/usr/share/nginx/html/index.htmlを以下内容に修正する。
 
     - どちらかのコンテナ
 
@@ -166,13 +166,13 @@
    530000 desu
    ```
 
-1. Service:nginx-svcのlabelSelectorを「app: test」から「`app: test2`」に修正し、修正を適用する。
+1. Service:nginx-svcのlabelSelectorを「app: nginx」から「`app: nginx2`」に修正し、修正を適用する。
 
    【回答例】
 
    ```bash
    # manifest修正
-   $ cat Service.yaml | sed 's/app: test/app: test2/' > Service.yaml
+   $ cat Service.yaml | sed 's/app: nginx/app: nginx2/' > Service.yaml
    $
    $ cat Service.yaml
    kind: Service
@@ -181,7 +181,7 @@
      name: nginx-svc
    spec:
      selector:
-       app: test2
+       app: nginx2
      ports:
      - protocol: TCP
        port: 80
@@ -196,7 +196,7 @@
    (`アクセスできない`ことを確認する）
 
    【回答例】
-   Service:nginx-svcは通信を`app: test2`というLabelを持つPodに転送しようとしているが、該当Labelを持ったPodが存在しないため、エラーとなる。
+   Service:nginx-svcは通信を`app: nginx2`というLabelを持つPodに転送しようとしているが、該当Labelを持ったPodが存在しないため、エラーとなる。
 
    ```bash
    $ kubectl exec curl -- curl nginx-svc

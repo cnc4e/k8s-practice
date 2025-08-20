@@ -231,7 +231,8 @@
    statefulset.apps/nginx-vct-sts created
    ```
 
-1. PVCおよびPVリソースのオブジェクト一覧を表示し、それぞれ`3つ`作成されていることを確認してください。
+1. PVCおよびPVリソースのオブジェクト一覧を表示し、それぞれ`3つ`作成されていることを確認してください。  
+ここで、何らかの原因でPodがボリュームに割り当てられなかった際、yamlファイルで適切なvolumeClaimTemplatesを設定し再デプロイしても失敗することがあります。この原因として、後述のようにStatefulSetを削除してもPVCおよびPVリソースは削除されず、新しいvolumeClaimTemplatesの設定でPVCが作られないことが挙げられます。この場合、古いPVCを削除した後に再度yamlファイルをデプロイしてみてください。
 
    【回答例】
 
@@ -343,7 +344,7 @@
 
    ```bash
    # 実行結果
-   # kubectl delete pv,pvc --all
+   $ kubectl delete pv,pvc --all
    persistentvolume "pvc-66d2bb4d-6e94-42b7-8ca5-2424e055603d" deleted
    persistentvolume "pvc-c7d544c7-5884-45e5-9d7a-396ad0314410" deleted
    persistentvolume "pvc-e856af9a-98f1-4070-86b3-5e6862ae4677" deleted

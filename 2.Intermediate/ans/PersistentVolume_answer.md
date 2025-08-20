@@ -33,6 +33,18 @@
    persistentvolumeclaim/nfs-server-pvc created
    ```
 
+   kubectlのバージョンによっては以下のようなエラーが出力される場合があります。
+   ```bash
+   $ kubectl apply -f nfs-server-pvc.yaml
+   Error from server (NotFound): error when creating "test.yaml": namespaces "nfs" not found
+   ```
+
+   この場合は、以下のコマンドを実行し`nfs`のNameSpaceを作成してください。
+   ```bash
+   $ kubectl create ns nfs
+   namespace/nfs created
+   ```
+
 1. PVCリソースのオブジェクト一覧を確認してください。
 
    【回答例】
@@ -99,10 +111,36 @@
 
    ```bash
    # 実行結果
-   $ kubectl get pvc
+   $ kubectl get pvc -n nfs
    NAME                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
    nfs-server-pvc   Bound    pvc-5182b236-fd75-4864-87dc-48c76dd4d373   1Gi        RWO            gp2            2m24s
    ```
+
+   ここで、STATUSが`Pending`のままの場合、いくつかの原因が考えられます。よくある原因を以下に記載しましたので、参考にしてください。  
+     - Amazon EBS CSI ドライバーがインストールされていない。  
+     AWS EKSでは、デフォルトではKubernetes ボリュームのストレージとしてEBSを使うことができません。そのため、**Amazon EBS CSI ドライバー**アドオンのインストールが必要です。[こちら][2]を参考にしてインストール・設定を行ってください。  
+     また、実際にKubernetesリソースがEBSを作成するにはIAM権限が必要ですが、Kubernetesに直接IAMロールを付与することはできません。そのため、**IRSA**または**EKS Pod Identity**を設定する必要があります。[こちら][3]を参考にしてインストールしてください。  
+     - デフォルトのStorageClassが存在しない。  
+     クラスターの設定によっては、デフォルトのStorageClassが設定されていない場合があります。`kubectl get sc`を実行し、リソース名の後ろに`(default)`と書かれたリソースが無い場合は、以下のように`storageClassName`の設定を行ってください。
+     ```bash
+     $ kubectl get sc
+     NAME   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+     gp2    kubernetes.io/aws-ebs   Delete          WaitForFirstConsumer   false                  114d
+     $ cat <<EOF > ./nfs-server-pvc.yaml
+       apiVersion: v1
+       kind: PersistentVolumeClaim
+       metadata:
+         name: nfs-server-pvc
+         namespace: nfs
+       spec:
+         accessModes:
+         - ReadWriteOnce
+         storageClassName: gp2
+         resources:
+           requests:
+             storage: 1Gi
+       EOF
+     ```
 
 1. PVリソースのオブジェクト一覧を確認してください。
 
@@ -153,3 +191,5 @@
    ```
 
 [1]:https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+[2]:https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/ebs-csi.html
+[3]:https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/pod-identities.html#pod-id-setup-overview

@@ -1,5 +1,22 @@
 # 回答例
 
+## Amazon VPC CNI plugin for KubernetesにNetworkPolicyを適用させる  
+
+1. AWSマネージメントコンソールを使う例を紹介します。  
+コンソールを開き、"Amazon Elastic Kubernetes Service > クラスター > {自身が使っているクラスター} > アドオン > Amazon VPC CNI"の順に遷移してください。
+2. 画面右上の`編集`を押下してください。
+3. 画面下の`オプションの設定`を開き、"設定値"欄に以下のjsonコードを入力してください。
+```json
+{
+    "enableNetworkPolicy": "true",
+    "nodeAgent": {
+        "healthProbeBindAddr": "8163",
+        "metricsBindAddr": "8162"
+    }
+}
+```
+4. 入力後`変更内容を保存`を押下します。少し時間が経った後に、"vpc-cni"画面の"高度な設定"欄に先ほどのjsonコードが表示されていれば成功です。
+
 ## Calicoのデプロイ
 
 1. 以下のコマンドを実行してください。
@@ -110,39 +127,39 @@
    apiVersion: v1
    kind: Namespace
    metadata:
-     name: calico-1
+     name: nginx-1
      labels:
-       ns: calico-1
+       ns: nginx-1
    ---
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-     name: calico-1-nginx
-     namespace: calico-1
+     name: nginx-1
+     namespace: nginx-1
    spec:
      replicas: 1
      selector:
        matchLabels:
-         app: calico-1-nginx
+         app: nginx-1
      template:
        metadata:
          labels:
-           app: calico-1-nginx
+           app: nginx-1
        spec:
          containers:
-           - name: calico-1-nginx
+           - name: nginx-1
              image: nginx:1.12
              lifecycle:
                postStart:
                  exec:
                    command:
-                     ["/bin/sh", "-c", "echo calico-1 > /usr/share/nginx/html/index.html"]
+                     ["/bin/sh", "-c", "echo nginx-1 > /usr/share/nginx/html/index.html"]
    ---
    apiVersion: v1
    kind: Service
    metadata:
-     name: calico-1-nginx-svc
-     namespace: calico-1
+     name: nginx-1-svc
+     namespace: nginx-1
    spec:
      ports:
        - name: "http-port"
@@ -150,7 +167,7 @@
          port: 80
          targetPort: 80
      selector:
-       app: calico-1-nginx
+       app: nginx-1
    ```
 
    ```yml
@@ -159,39 +176,39 @@
    apiVersion: v1
    kind: Namespace
    metadata:
-     name: calico-2
+     name: nginx-2
      labels:
-       ns: calico-2
+       ns: nginx-2
    ---
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-     name: calico-2-nginx
-     namespace: calico-2
+     name: nginx-2
+     namespace: nginx-2
    spec:
      replicas: 1
      selector:
        matchLabels:
-         app: calico-2-nginx
+         app: nginx-2
      template:
        metadata:
          labels:
-           app: calico-2-nginx
+           app: nginx-2
        spec:
          containers:
-           - name: calico-2-nginx
+           - name: nginx-2
              image: nginx:1.12
              lifecycle:
                postStart:
                  exec:
                    command:
-                     ["/bin/sh", "-c", "echo calico-2 > /usr/share/nginx/html/index.html"]
+                     ["/bin/sh", "-c", "echo nginx-2 > /usr/share/nginx/html/index.html"]
    ---
    apiVersion: v1
    kind: Service
    metadata:
-     name: calico-2-nginx-svc
-     namespace: calico-2
+     name: nginx-2-svc
+     namespace: nginx-2
    spec:
      ports:
        - name: "http-port"
@@ -199,20 +216,20 @@
          port: 80
          targetPort: 80
      selector:
-       app: calico-2-nginx
+       app: nginx-2
    ```
 
    ```bash
    # 実行結果
-   $ kubectl apply -f calico-1-nginx.yaml
-   namespace/calico-1 created
-   deployment.apps/calico-1-nginx created
-   service/calico-1-nginx-svc created
+   $ kubectl apply -f nginx-1.yaml
+   namespace/nginx-1 created
+   deployment.apps/nginx-1 created
+   service/nginx-1-svc created
 
-   $ kubectl apply -f calico-2-nginx.yaml
-   namespace/calico-2 created
-   deployment.apps/calico-2-nginx created
-   service/calico-2-nginx-svc created
+   $ kubectl apply -f nginx-2.yaml
+   namespace/nginx-2 created
+   deployment.apps/nginx-2 created
+   service/nginx-2-svc created
    ```
 
 1. 各NamespaceのcurlできるPodから各NamespaceのService:nginxに`通信可能`であることを確認してください。（計4回curlします。他Namespaceへcurlする場合、<Service名>.<Namespace名>でアクセス可能です。）
@@ -222,26 +239,26 @@
    ```bash
    # 実行結果
    ## testpod 作成
-   $ kubectl run --image=appropriate/curl --restart=Never --namespace=calico-1 testpod-1 sleep 3600
+   $ kubectl run --image=appropriate/curl --restart=Never --namespace=nginx-1 testpod-1 sleep 3600
    pod/testpod-1 created
-   $ kubectl run --image=appropriate/curl --restart=Never --namespace=calico-2 testpod-2 sleep 3600
+   $ kubectl run --image=appropriate/curl --restart=Never --namespace=nginx-2 testpod-2 sleep 3600
    pod/testpod-2 created
 
-   ## calico-1 ⇒ calico-1
-   $ kubectl exec testpod-1 -n calico-1 -- curl -s http://calico-1-nginx-svc
-   calico-1
+   ## nginx-1 ⇒ nginx-1
+   $ kubectl exec testpod-1 -n nginx-1 -- curl -s http://nginx-1-svc
+   nginx-1
 
-   ## calico-1 ⇒ calico-2
-   $ kubectl exec testpod-1 -n calico-1 -- curl -s http://calico-2-nginx-svc.calico-2
-   calico-2
+   ## nginx-1 ⇒ nginx-2
+   $ kubectl exec testpod-1 -n nginx-1 -- curl -s http://nginx-2-svc.nginx-2
+   nginx-2
 
-   ## calico-2 ⇒ calico-2
-   $ kubectl exec testpod-2 -n calico-2 -- curl -s http://calico-2-nginx-svc
-   calico-2
+   ## nginx-2 ⇒ nginx-2
+   $ kubectl exec testpod-2 -n nginx-2 -- curl -s http://nginx-2-svc
+   nginx-2
 
-   ## calico-2 ⇒ calico-1
-   $ kubectl exec testpod-2 -n calico-2 -- curl -s http://calico-1-nginx-svc.calico-1
-   calico-1
+   ## nginx-2 ⇒ nginx-1
+   $ kubectl exec testpod-2 -n nginx-2 -- curl -s http://nginx-1-svc.nginx-1
+   nginx-1
    ```
 
 1. 以下を満たすマニフェストを作成しデプロイしてください。NetworkPolicyリソースについては[公式ドキュメント][2]を参考にしてください。
@@ -262,19 +279,19 @@
    apiVersion: networking.k8s.io/v1
    kind: NetworkPolicy
    metadata:
-     name: calico-1-networkpolicy
-     namespace: calico-1
+     name: nginx-1-networkpolicy
+     namespace: nginx-1
    spec:
      podSelector:
        matchLabels:
-         app: calico-1-nginx
+         app: nginx-1
      policyTypes:
        - Ingress
      ingress:
        - from:
            - namespaceSelector:
                matchLabels:
-                 ns: calico-1
+                 ns: nginx-1
    ```
 
    ```yml
@@ -283,28 +300,28 @@
    apiVersion: networking.k8s.io/v1
    kind: NetworkPolicy
    metadata:
-     name: calico-2-networkpolicy
-     namespace: calico-2
+     name: nginx-2-networkpolicy
+     namespace: nginx-2
    spec:
      podSelector:
        matchLabels:
-         app: calico-2-nginx
+         app: nginx-2
      policyTypes:
        - Ingress
      ingress:
        - from:
            - namespaceSelector:
                matchLabels:
-                 ns: calico-2
+                 ns: nginx-2
    ```
 
    ```bash
    # 実行結果
-   $ kubectl apply -f calico-1-networkpolicy.yaml
-   networkpolicy.networking.k8s.io/calico-1-networkpolicy created
+   $ kubectl apply -f nginx-1-networkpolicy.yaml
+   networkpolicy.networking.k8s.io/nginx-1-networkpolicy created
 
-   $ kubectl apply -f calico-2-networkpolicy.yaml
-   networkpolicy.networking.k8s.io/calico-2-networkpolicy created
+   $ kubectl apply -f nginx-2-networkpolicy.yaml
+   networkpolicy.networking.k8s.io/nginx-2-networkpolicy created
    ```
 
 1. 各NamespaceのPod:curlから各NamespaceのService:nginxに`curl -s -m 10`で通信してください。-mはタイムアウト値(秒)を指定するオプションです。  
@@ -314,26 +331,26 @@
 
    ```bash
    # 実行結果
-   ## calico-1 ⇒ calico-1
-   $ kubectl exec testpod-1 -n calico-1 -- curl -s -m 10 http://calico-1-nginx-svc
-   calico-1
+   ## nginx-1 ⇒ nginx-1
+   $ kubectl exec testpod-1 -n nginx-1 -- curl -s -m 10 http://nginx-1-svc
+   nginx-1
 
-   ## calico-1 ⇒ calico-2
-   $ kubectl exec testpod-1 -n calico-1 -- curl -v -s -m 10 http://calico-2-nginx-svc.calico-2
-   * Rebuilt URL to: http://calico-2-nginx-svc.calico-2/
+   ## nginx-1 ⇒ nginx-2
+   $ kubectl exec testpod-1 -n nginx-1 -- curl -v -s -m 10 http://nginx-2-svc.nginx-2
+   * Rebuilt URL to: http://nginx-2-svc.nginx-2/
    *   Trying 10.100.162.160...
    * TCP_NODELAY set
    * Connection timed out after 10000 milliseconds
    * Closing connection 0
    command terminated with exit code 28
 
-   ## calico-2 ⇒ calico-2
-   $ kubectl exec testpod-2 -n calico-2 -- curl -s -m 10 http://calico-2-nginx-svc
-   calico-2
+   ## nginx-2 ⇒ nginx-2
+   $ kubectl exec testpod-2 -n nginx-2 -- curl -s -m 10 http://nginx-2-svc
+   nginx-2
 
-   ## calico-2 ⇒ calico-1
-   $ kubectl exec testpod-2 -n calico-2 -- curl -v -s -m 10 http://calico-1-nginx-svc.calico-1
-   * Rebuilt URL to: http://calico-1-nginx-svc.calico-1/
+   ## nginx-2 ⇒ nginx-1
+   $ kubectl exec testpod-2 -n nginx-2 -- curl -v -s -m 10 http://nginx-1-svc.nginx-1
+   * Rebuilt URL to: http://nginx-1-svc.nginx-1/
    *   Trying 10.100.63.22...
    * TCP_NODELAY set
    * Connection timed out after 10001 milliseconds
@@ -347,11 +364,11 @@
 
    ```bash
    # 実行結果
-   $ kubectl delete -f calico-1-networkpolicy.yaml
-   networkpolicy.networking.k8s.io/calico-1-networkpolicy deleted
+   $ kubectl delete -f nginx-1-networkpolicy.yaml
+   networkpolicy.networking.k8s.io/nginx-1-networkpolicy deleted
 
-   $ kubectl deleted -f calico-2-networkpolicy.yaml
-   networkpolicy.networking.k8s.io/calico-2-networkpolicy deleted
+   $ kubectl deleted -f nginx-2-networkpolicy.yaml
+   networkpolicy.networking.k8s.io/nginx-2-networkpolicy deleted
    ```
 
 ## NetworkPolicy(Pod単位)
@@ -374,57 +391,57 @@
    apiVersion: v1
    kind: Namespace
    metadata:
-     name: calico-3
+     name: nginx-3
      labels:
-       ns: calico-3
+       ns: nginx-3
    ---
    apiVersion: apps/v1
    kind: Deployment
    metadata:
-     name: calico-3-curl
-     namespace: calico-3
+     name: nginx-3-curl
+     namespace: nginx-3
    spec:
      replicas: 1
      selector:
        matchLabels:
-         app: calico-3-curl
+         app: nginx-3-curl
      template:
        metadata:
          labels:
-           app: calico-3-curl
+           app: nginx-3-curl
        spec:
          containers:
-           - name: calico-3-curl
+           - name: nginx-3-curl
              image: appropriate/curl
              command: ["/bin/sh", "-c", "sleep 3600"]
    ---
    apiVersion: networking.k8s.io/v1
    kind: NetworkPolicy
    metadata:
-     name: calico-1-networkpolicy
-     namespace: calico-1
+     name: nginx-1-networkpolicy
+     namespace: nginx-1
    spec:
      podSelector:
        matchLabels:
-         app: calico-1-nginx
+         app: nginx-1
      policyTypes:
        - Ingress
      ingress:
        - from:
            - namespaceSelector:
                matchLabels:
-                 ns: calico-3
+                 ns: nginx-3
            - podSelector:
                matchLabels:
-                 app: calico-3-curl
+                 app: nginx-3-curl
    ```
 
    ```bash
    # 実行結果
-   $ kubectl apply -f calico-3.yaml
-   namespace/calico-3 created
-   deployment.apps/calico-3-nginx created
-   networkpolicy.networking.k8s.io/calico-3-networkpolicy created
+   $ kubectl apply -f nginx-3.yaml
+   namespace/nginx-3 created
+   deployment.apps/nginx-3 created
+   networkpolicy.networking.k8s.io/nginx-3-networkpolicy created
    ```
 
 1. 2つ目と3つ目のDeploymentでデプロイしたPodからService:nginxに対して通信してください。3つ目でデプロイしたPodからのみアクセスできることを確認してください。（もしできてしまう場合、同一Namespaceからの通信を許可するNetworkPolicyが残っていないか確認し、残っていれば削除する）
@@ -433,22 +450,23 @@
 
    ```bash
    # 実行結果
-   $ kubectl get pod -n calico-3
+   $ kubectl get pod -n nginx-3
    NAME                             READY   STATUS    RESTARTS   AGE
-   calico-3-curl-6b6b646dc7-ctw9p   1/1     Running   0          7s
+   nginx-3-curl-6b6b646dc7-ctw9p   1/1     Running   0          7s
 
 
-   ## calico-2 ⇒ calico-1
-   $ kubectl exec testpod-2 -n calico-2 -- curl -v -s -m 10 http://calico-1-nginx-svc.calico-1
-   * Rebuilt URL to: http://calico-1-nginx-svc.calico-1/
+   ## nginx-2 ⇒ nginx-1
+   $ kubectl exec testpod-2 -n nginx-2 -- curl -v -s -m 10 http://nginx-1-svc.nginx-1
+   * Rebuilt URL to: http://nginx-1-svc.nginx-1/
    *   Trying 10.100.63.22...
    * TCP_NODELAY set
    * Connection timed out after 10001 milliseconds
    * Closing connection 0
    command terminated with exit code 28
 
-   $ kubectl exec calico-3-curl-6b6b646dc7-ctw9p -n calico-3 -- curl -s -m 10 http://calico-1-nginx-svc.calico-1
-   calico-1
+   ## nginx-3 ⇒ nginx-1
+   $ kubectl exec nginx-3-curl-6b6b646dc7-ctw9p -n nginx-3 -- curl -s -m 10 http://nginx-1-svc.nginx-1
+   nginx-1
    ```
 
 1. 作成したリソースを削除してください。
@@ -457,20 +475,20 @@
 
    ```bash
    # 実行結果
-   $ kubectl delete -f calico-3.yaml
-   namespace "calico-3" deleted
-   deployment.apps "calico-3-curl" deleted
-   networkpolicy.networking.k8s.io "calico-1-networkpolicy" deleted
+   $ kubectl delete -f nginx-3.yaml
+   namespace "nginx-3" deleted
+   deployment.apps "nginx-3-curl" deleted
+   networkpolicy.networking.k8s.io "nginx-1-networkpolicy" deleted
 
-   $ kubectl delete -f calico-1-nginx.yaml
-   namespace "calico-1" deleted
-   deployment.apps "calico-1-nginx" deleted
-   service "calico-1-nginx-svc" deleted
+   $ kubectl delete -f nginx-1.yaml
+   namespace "nginx-1" deleted
+   deployment.apps "nginx-1" deleted
+   service "nginx-1-svc" deleted
 
-   $ kubectl delete -f calico-2-nginx.yaml
-   namespace "calico-2" deleted
-   deployment.apps "calico-2-nginx" deleted
-   service "calico-2-nginx-svc" deleted
+   $ kubectl delete -f nginx-2.yaml
+   namespace "nginx-2" deleted
+   deployment.apps "nginx-2" deleted
+   service "nginx-2-svc" deleted
    ```
 
 [2]:https://kubernetes.io/docs/concepts/services-networking/network-policies/

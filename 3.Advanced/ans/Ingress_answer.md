@@ -72,7 +72,7 @@
    spec:
      ingressClassName: nginx
      rules:
-       - host: test-1.k8s.practice
+       - host: test-1.k8s.practice.local
          http:
            paths:
            - path: /
@@ -156,7 +156,7 @@
    ```
 
 1. インターネットに接続可能でcurlが実行できる端末から以下コマンドを発行し、それぞれのServiceにIngressを経由してアクセスできていることを確認してください。  
-  （プロキシ経由のアクセスだとリクエストがキャッシュされて表示が変わらないかもしれ。その場合はプロキシを通らない経路で試してみるとうまくいくかもしれない。）
+  （プロキシ経由のアクセスだとリクエストがキャッシュされて表示が変わらないかもしれません。その場合はプロキシを通らない経路で試してみてください。）
 
    ```bash
    curl -H "Host:test-1.k8s.practice.local" http://<nginx ingress用LBのDNS名>
@@ -218,7 +218,7 @@
    23f1fb22fe719c3fd
    ```
 
-1. 上記手順ではHTTPのリクエストヘッダにホスト名を入れることで接続しましたが。しかし本来であればホスト名である「test-1.k8s.practice」および「test-2.k8s.practice」をRoute53などのDNSにレコード追加して動作確認するべきです。以下を実行してください。
+1. 上記手順ではHTTPのリクエストヘッダにホスト名を入れることで接続しました。しかし本来であればホスト名である「test-1.k8s.practice」および「test-2.k8s.practice」をRoute53などのDNSにレコード追加して動作確認するべきです。以下を実行してください。
    1. VPC内部限定のプライベートホストゾーン「k8s.practice.local」を作成する
    1. 「*.k8s.practice.local」の宛先をNginx Ingress用LBとするCNAMEレコードを作成する。
    1. 以下のコマンドをVPC内のEC2インスタンス等から実行する。(Cloud9を使用するのが簡単でしょう。)
@@ -346,27 +346,6 @@
     (略)
    ---
    apiVersion: v1
-   data:
-     allow-snippet-annotations: "true"
-     http-snippet: |
-       server {
-         listen 2443;
-         return 308 https://$host$request_uri;
-       }
-     proxy-real-ip-cidr: 192.168.0.0/16
-     use-forwarded-headers: "true"
-   kind: ConfigMap
-   metadata:
-     labels:
-       app.kubernetes.io/component: controller
-       app.kubernetes.io/instance: ingress-nginx
-       app.kubernetes.io/name: ingress-nginx
-       app.kubernetes.io/part-of: ingress-nginx
-       app.kubernetes.io/version: 1.6.4
-     name: ingress-nginx-controller
-     namespace: ingress-nginx
-   ---
-   apiVersion: v1
    kind: Service
    metadata:
      annotations:
@@ -393,7 +372,7 @@
          name: http
          port: 80
          protocol: TCP
-         targetPort: tohttps
+         targetPort: https
        - appProtocol: https
          name: https
          port: 443
@@ -404,123 +383,6 @@
        app.kubernetes.io/instance: ingress-nginx
        app.kubernetes.io/name: ingress-nginx
      type: LoadBalancer
-   ---
-    (略)
-   ---
-   apiVersion: apps/v1
-   kind: Deployment
-   metadata:
-     labels:
-       app.kubernetes.io/component: controller
-       app.kubernetes.io/instance: ingress-nginx
-       app.kubernetes.io/name: ingress-nginx
-       app.kubernetes.io/part-of: ingress-nginx
-       app.kubernetes.io/version: 1.6.4
-     name: ingress-nginx-controller
-     namespace: ingress-nginx
-   spec:
-     minReadySeconds: 0
-     revisionHistoryLimit: 10
-     selector:
-       matchLabels:
-         app.kubernetes.io/component: controller
-         app.kubernetes.io/instance: ingress-nginx
-         app.kubernetes.io/name: ingress-nginx
-     template:
-       metadata:
-         labels:
-           app.kubernetes.io/component: controller
-           app.kubernetes.io/instance: ingress-nginx
-           app.kubernetes.io/name: ingress-nginx
-       spec:
-         containers:
-           - args:
-               - /nginx-ingress-controller
-               - --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
-               - --election-id=ingress-nginx-leader
-               - --controller-class=k8s.io/ingress-nginx
-               - --ingress-class=nginx
-               - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
-               - --validating-webhook=:8443
-               - --validating-webhook-certificate=/usr/local/certificates/cert
-               - --validating-webhook-key=/usr/local/certificates/key
-             env:
-               - name: POD_NAME
-                 valueFrom:
-                   fieldRef:
-                     fieldPath: metadata.name
-               - name: POD_NAMESPACE
-                 valueFrom:
-                   fieldRef:
-                     fieldPath: metadata.namespace
-               - name: LD_PRELOAD
-                 value: /usr/local/lib/libmimalloc.so
-             image: registry.k8s.io/ingress-nginx/controller:v1.6.4@sha256:15be4666c53052484dd2992efacf2f50ea77a78ae8aa21ccd91af6baaa7ea22f
-             imagePullPolicy: IfNotPresent
-             lifecycle:
-               preStop:
-                 exec:
-                   command:
-                     - /wait-shutdown
-             livenessProbe:
-               failureThreshold: 5
-               httpGet:
-                 path: /healthz
-                 port: 10254
-                 scheme: HTTP
-               initialDelaySeconds: 10
-               periodSeconds: 10
-               successThreshold: 1
-               timeoutSeconds: 1
-             name: controller
-             ports:
-               - containerPort: 80
-                 name: http
-                 protocol: TCP
-               - containerPort: 80
-                 name: https
-                 protocol: TCP
-               - containerPort: 2443
-                 name: tohttps
-                 protocol: TCP
-               - containerPort: 8443
-                 name: webhook
-                 protocol: TCP
-             readinessProbe:
-               failureThreshold: 3
-               httpGet:
-                 path: /healthz
-                 port: 10254
-                 scheme: HTTP
-               initialDelaySeconds: 10
-               periodSeconds: 10
-               successThreshold: 1
-               timeoutSeconds: 1
-             resources:
-               requests:
-                 cpu: 100m
-                 memory: 90Mi
-             securityContext:
-               allowPrivilegeEscalation: true
-               capabilities:
-                 add:
-                   - NET_BIND_SERVICE
-                 drop:
-                   - ALL
-               runAsUser: 101
-             volumeMounts:
-               - mountPath: /usr/local/certificates/
-                 name: webhook-cert
-                 readOnly: true
-         dnsPolicy: ClusterFirst
-         nodeSelector:
-           kubernetes.io/os: linux
-         serviceAccountName: ingress-nginx
-         terminationGracePeriodSeconds: 300
-         volumes:
-           - name: webhook-cert
-             secret:
-               secretName: ingress-nginx-admission
    ---
     (略)
    ```
@@ -553,7 +415,7 @@
 
    ```bash
    curl https://test-1.k8s.practice.local
-   curl https://test-1.k8s.practice.local
+   curl https://test-2.k8s.practice.local
    ```
 
    【回答例】
@@ -567,7 +429,7 @@
    nginx-2-68d8c9ff8-8b96q
    ```
 
-1. 作成したリソースを削除してください。
+1. 作成したリソースを削除してください。ここで、ホストゾーン・ACMなど、Kubernetesで作成していないリソースを削除することを忘れないでください。
 
    【回答例】
 

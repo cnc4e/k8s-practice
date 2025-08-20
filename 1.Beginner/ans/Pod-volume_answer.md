@@ -114,7 +114,7 @@
    $ kubectl exec nginx-7f7c98667-khks5 -- bash -c "echo 'zettai ni nakunatte ha ikenai data ga kokoni aru' > /usr/share/nginx/html/index.html"
    ```
 
-1. curlを実行できるPodを展開し、Service:volume-svcを経由してDeploymentにアクセスする。
+1. curlを実行できるPodを展開し、Service:volume-svcを経由してDeploymentにアクセスする。(前章で作成している場合は新しく作る必要はありません)  
   （さきほど修正したindex.htmlが表示`される`ことを確認する）
 
    【回答例】

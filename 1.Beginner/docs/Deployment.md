@@ -134,42 +134,46 @@ nginxのバージョンを1.22から1.23へアップデートします。
 1. 次のmanifestを使用して、Deployment:nginx-rollupを作成する。
 
 ``` yml
-piVersion: apps/v1
-ind: Deployment
-etadata:
- name: nginx-rollup
- labels:
-   app: nginx-rollup
-pec:
- replicas: 2
- selector:
-   matchLabels:
-     app: nginx-rollup
- template:
-   metadata:
-     labels:
-       app: nginx-rollup
-   spec:
-     containers:
-     - name: nginx
-       image: nginx:1.22
-       lifecycle:
-         preStop:
-           exec:
-             command: ['sh', '-c', 'sleep 30']
-     initContainers:
-     - name: busybox
-       image: busybox:1.28
-       command: ['sh', '-c', 'sleep 30']
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-rollup
+  labels:
+    app: nginx-rollup
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-rollup
+  template:
+    metadata:
+      labels:
+        app: nginx-rollup
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.22
+        lifecycle:
+          preStop:
+            exec:
+              command: ['sh', '-c', 'sleep 30']
+      initContainers:
+      - name: busybox
+        image: busybox:1.28
+        command: ['sh', '-c', 'sleep 30']
 ```
 
 2. Deployment、ReplicaSet、Podそれぞれのオブジェクト一覧を表示する。
 
-3. manifestの`nginx:1.22`を`nginx:1.23`へと修正し、修正を適用する。
+3. Podのimageを表示し、`nginx:1.22`であることを確認する。
 
-4. Deployment、ReplicaSet、Podそれぞれのオブジェクト一覧を繰り返し表示する。（順番にPodが再作成されることを確認してください。）
+4. manifestの`nginx:1.22`を`nginx:1.23`へと修正し、修正を適用する。
 
-5. Deployment:nginx-rollupを削除する。
+5. Deployment、ReplicaSet、Podそれぞれのオブジェクト一覧を繰り返し表示する。（順番にPodが再作成されることを確認してください。）
+
+6. Podのimageを表示し、`nginx:1.23`であることを確認する。
+
+7. Deployment:nginx-rollupを削除する。
 
 以上で本チュートリアルは終了です。
 

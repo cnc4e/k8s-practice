@@ -26,11 +26,11 @@ Pod数を自動で増減させるHorizontal Pod Autoscalerを使用するにはM
 > 時間が経ってもkubectl topで結果がうまく出力されず、Metrics Serverのログに`unable to fetch node metrics for node ~`や`"unable to fetch node metrics for pod ~"などが出力されている場合はデバッグが必要になります。
 > インターネットを調べてデバッグしてください。
 
-1. 作成したリソースを削除してください。
+1. この後の章で使いますので、Metrics Serverはそのままにしておいてください。(後日演習を実施するなどの理由がありましたら削除してもかまいません)
 
 以上で本演習は終了です。
 
-具体的な操作およびその結果に関する回答例は[こちら](../ans/MetricServer_answer.md)にあります。
+具体的な操作およびその結果に関する回答例は[こちら](../ans/MetricsServer_answer.md)にあります。
 具体的な操作方法がわからなかった場合や、想定した結果にならなかった場合などに参照してください。
 
 [1]:https://kubernetes.io/docs/tasks/debug-application-cluster/resource-metrics-pipeline/#metrics-server
