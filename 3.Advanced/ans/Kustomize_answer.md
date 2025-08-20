@@ -147,20 +147,20 @@
 1. overlay/dev/およびoverlay/prod/に以下を満たすマニフェストおよびkustomization.yamlを作成してください。
 
    - 要件
-     - dev
-       - baseは../../base
-       - 作成するオブジェクトのプレフィックスに`dev-`をつける
-       - 作成するオブジェクトに`env: dev`のラベルを追加
-       - ConfigMap:env-configを上書き（patches）し`ENV: dev`に変更してください。
      - prod
        - baseは../../base
        - 作成するオブジェクトのプレフィックスに`prod-`をつける
        - 作成するオブジェクトに`env: prod`のラベルを追加
        - ConfigMap:env-configを上書き（patches）し`ENV: prod`に変更してください。
+     - dev
+       - baseは../../base
+       - 作成するオブジェクトのプレフィックスに`dev-`をつける
+       - 作成するオブジェクトに`env: dev`のラベルを追加
+       - ConfigMap:env-configを上書き（patches）し`ENV: dev`に変更してください。
 
    【回答例】
 
-    ```yml
+   ```yml
    # manifest (prod)
    ## configmap.yaml
    apiVersion: v1
@@ -185,7 +185,7 @@
          env: prod
    ```
 
-      ```yml
+   ```yml
    # manifest (dev)
    ## configmap.yaml
    apiVersion: v1
