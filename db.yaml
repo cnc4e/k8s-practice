@@ -1,0 +1,56 @@
+# manifest
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sbdemo-db
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name:
+    sbdemo-postgres-sts
+  namespace: sbdemo-db
+spec:
+  serviceName: sbdemo-postgres-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sbdemo-postgres-sts
+  template:
+    metadata:
+      labels:
+        app: sbdemo-postgres-sts
+    spec:
+      containers:
+       - name: postgres
+         image: dayan888/springdemo:postgres9.6
+         ports:
+          - containerPort: 5432
+         volumeMounts:
+         - name: pvc-db-volume
+           mountPath: /var/lib/postgresql
+  volumeClaimTemplates:
+  - metadata:
+      name: pvc-db-volume
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1G
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sbdemo-postgres-service
+  namespace: sbdemo-db
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+   - name: "db-port"
+     protocol: "TCP"
+     port: 5432
+     targetPort: 5432
+  selector:
+    app: sbdemo-postgres-sts

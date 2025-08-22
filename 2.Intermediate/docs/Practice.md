@@ -91,7 +91,7 @@
     - 名前は`sbdemo-postgres-sts`
     - Namespaceは`sbdemo-db`
     - labelはすべて`app: sbdemo-postgres-sts`
-    - replicasは `3`
+    - replicasは `1`
     - Pod
       - 名前は`postgres`
       - イメージは`dayan888/springdemo:postgres9.6`

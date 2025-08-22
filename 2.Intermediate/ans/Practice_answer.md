@@ -146,7 +146,7 @@ spec:
   capacity:
     storage: 1Gi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   nfs:
     server: "10.100.80.196"
     path: "/"
@@ -248,7 +248,7 @@ service/sbdemo-redis-service created
     - 名前は`sbdemo-postgres-sts`
     - Namespaceは`sbdemo-db`
     - labelはすべて`app: sbdemo-postgres-sts`
-    - replicasは `3`
+    - replicasは `1`
     - Pod
       - 名前は`postgres`
       - イメージは`dayan888/springdemo:postgres9.6`
@@ -397,7 +397,7 @@ spec:
     matchLabels:
       role: nfs-pv
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   storageClassName: ""
   resources:
     requests:
@@ -638,7 +638,7 @@ metadata:
   name: sbdemo-nginx
   namespace: "sbdemo-web"
 spec:
-  replicas: 13
+  replicas: 3
   selector:
     matchLabels:
       app: sbdemo-nginx
