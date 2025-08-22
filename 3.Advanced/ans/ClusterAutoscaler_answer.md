@@ -186,7 +186,7 @@ $ wget https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/c
    deployment.apps/nginx created
    ```
 
-2. 上記作成したDeploymentのreplica数を1つずつ増やし、STATUS:PendingのPodが出るまで続けてください。
+1. 上記作成したDeploymentのreplica数を1つずつ増やし、STATUS:PendingのPodが出るまで続けてください。
 
    【回答例】
 
@@ -215,7 +215,7 @@ $ wget https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/c
    > ここでは、replica数:5にしています。
    > ワーカーのスペックによりますが、 node数 + 1 or 2 で Pending状態のPodが作成されると思われます。
 
-3. 「kubectl get node」および「kubectl get pod」をwatch等で監視し、Nodeが増えてSTATUS:PendingのPodがrunningになることを確認してください。
+1. 「kubectl get node」および「kubectl get pod」をwatch等で監視し、Nodeが増えてSTATUS:PendingのPodがrunningになることを確認してください。
 
    > :information_source:  
    >
@@ -259,7 +259,7 @@ $ wget https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/c
    pod/nginx-5c7b8644f5-wnqwq   1/1     Running   0          39m
    ```
 
-4. 上記作成したDeploymentのreplica数を1にしてください。
+1. 上記作成したDeploymentのreplica数を1にしてください。
 
    【回答例】
 
@@ -295,7 +295,7 @@ $ wget https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/c
    deployment.apps/nginx configured
    ```
 
-5. 「kubectl get node」および「kubectl get pod」をwatch等で監視し、Nodeが減ることを確認してください。
+1. 「kubectl get node」および「kubectl get pod」をwatch等で監視し、Nodeが減ることを確認してください。
 
    > :information_source:  
    > デフォルトではスケールアウト後のスケールインは`10分以上`経過しないと行われません。
@@ -360,7 +360,7 @@ $ wget https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/c
    pod/nginx-5c7b8644f5-bxbrq   1/1     Running   0          39m
    ```
 
-6. 作成したリソースを削除してください。
+1. 作成したリソースを削除してください。
 
    【回答例】
 

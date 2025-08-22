@@ -173,7 +173,7 @@ spec:
 
 6. Podのimageを表示し、`nginx:1.23`であることを確認する。
 
-7. Deployment:nginx-rollupを削除する。
+5. Deployment:nginx-rollupを削除する。
 
 以上で本チュートリアルは終了です。
 
