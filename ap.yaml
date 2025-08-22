@@ -15,7 +15,7 @@ spec:
       role: nfs-pv
   accessModes:
     - ReadWriteOnce
-  storageClassName: ""
+  storageClassName: "gp2"
   resources:
     requests:
       storage: 1Gi
