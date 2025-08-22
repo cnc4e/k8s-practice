@@ -172,7 +172,7 @@
 
    ```bash
    # manifest修正
-   $ cat Service.yaml | sed 's/app: nginx/app: nginx2/' > Service.yaml
+   $ sed -i 's/app: nginx/app: nginx2/' Service.yaml
    $
    $ cat Service.yaml
    kind: Service

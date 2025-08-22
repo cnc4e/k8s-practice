@@ -109,20 +109,8 @@ $ wget https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/c
    cluster-autoscaler-bdc5bbf78-7vf2b   1/1     Running   0          53s
 
    # ここでPodがerrorとなりPodを再生成し続ける場合は、以下の設定を行っていないか確認してみてください。
-   ・ServiceAccountのannotationsを設定しているか
    ・Deploymentのenvで環境変数としてリージョンを設定しているか
 
-   ---
-   apiVersion: v1
-   kind: ServiceAccount
-   metadata:
-     labels:
-       k8s-addon: cluster-autoscaler.addons.k8s.io
-       k8s-app: cluster-autoscaler
-     name: cluster-autoscaler
-     namespace: kube-system
-     annotations:
-       eks.amazonaws.com/role-arn: arn:aws:iam::<アカウントID>:role/<IAM OIDCを設定したIAMロール名> ★
    ~~~
    apiVersion: apps/v1
    kind: Deployment

@@ -98,6 +98,7 @@ NFSサーバを構築します。
    - 要件
      - PersistentVolumeClaim
        - 名前は`nfs-pvc`
+       - Namespaceは`nfs`
        - storageClassNameは`指定しない`（デフォルトのStorageClassを使用する）
        - accessModesは`ReadWriteOnce`
        - ストレージ容量は`1Gi`
@@ -109,6 +110,7 @@ NFSサーバを構築します。
    - 要件
      - Deployment
        - 名前は`nfs-server`
+       - Namespaceは`nfs`
        - replicas: `1`
        - labelはすべて`role: nfs-server`
        - Pod
@@ -116,7 +118,7 @@ NFSサーバを構築します。
          - volumeプラグインで上記PVC:`nfs-server-pvc`を指定
          - 上記で定義したボリュームをコンテナの`/exports`にマウント
 
-1. PVCリソースのオブジェクト一覧を確認してください。
+1. PVCリソースのオブジェクト一覧を確認してください。(ここでPendingで止まってしまい、解決できない場合は回答例を見てみてください。)
 
 1. PVリソースのオブジェクト一覧を確認してください。
 

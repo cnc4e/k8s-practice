@@ -104,7 +104,7 @@
 
    ```bash
    # manifest修正
-   $ cat Deployment.yaml | sed 's/replicas: 1/replicas: 2/' > Deployment.yaml
+   $ sed -i 's/replicas: 1/replicas: 2/' Deployment.yaml
    $
    $ cat Deployment.yaml
    apiVersion: apps/v1
@@ -253,7 +253,7 @@
 
    ```bash
    # manifest修正
-   $ cat Deployment-rollup.yaml | sed -i 's/nginx:1.22/nginx:1.23/' Deployment-rollup.yaml
+   $ sed -i 's/nginx:1.22/nginx:1.23/' Deployment-rollup.yaml
    $
    $ cat Deployment-rollup.yaml
    apiVersion: apps/v1
@@ -313,7 +313,7 @@
      ※ 新バージョンのnginxコンテナ(wlvd6)が起動を開始する
 
    # Deployment
-   NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+   NAME           READY   UP-TO-DATE   AVAILABLE   
    nginx-rollup   2/2     1            2           14m
    # ReplicaSet
    NAME                      DESIRED   CURRENT   READY   AGE
@@ -367,7 +367,7 @@
 
    ```bash
    $ kubectl get pod nginx-rollup-785d697996-p29qw -o jsonpath="{.spec.containers[*].image}"
-   nginx:1.22
+   nginx:1.23
    ```
 
 1. Deployment:nginx-rollupを削除する。

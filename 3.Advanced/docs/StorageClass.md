@@ -21,7 +21,7 @@ K8sにはデフォルトでAWS EBSやAzure Diskなど代表的なストレージ
    - 要件
      - StorageClass
        - 名前はio1
-       - ebsのprovisionerを使用
+       - provisionerはebs.csi.aws.com
        - reclaimPolicyはDelete
      - Deployment
        - イメージは何でもよい

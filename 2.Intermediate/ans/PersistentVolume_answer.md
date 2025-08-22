@@ -5,6 +5,7 @@
    - 要件
      - PersistentVolumeClaim
        - 名前は`nfs-server-pvc`
+       - Namespaceは`nfs`
        - storageClassNameは`指定しない`（デフォルトのStorageClassを使用する）
        - accessModesは`ReadWriteOnce`
        - ストレージ容量は`1Gi`
@@ -13,6 +14,11 @@
 
    ```yaml
    # manifest
+   apiVersion: v1
+   kind: Namespace
+   metadata:
+     name: nfs
+   ---
    apiVersion: v1
    kind: PersistentVolumeClaim
    metadata:
@@ -33,18 +39,6 @@
    persistentvolumeclaim/nfs-server-pvc created
    ```
 
-   kubectlのバージョンによっては以下のようなエラーが出力される場合があります。
-   ```bash
-   $ kubectl apply -f nfs-server-pvc.yaml
-   Error from server (NotFound): error when creating "test.yaml": namespaces "nfs" not found
-   ```
-
-   この場合は、以下のコマンドを実行し`nfs`のNameSpaceを作成してください。
-   ```bash
-   $ kubectl create ns nfs
-   namespace/nfs created
-   ```
-
 1. PVCリソースのオブジェクト一覧を確認してください。
 
    【回答例】
@@ -61,6 +55,7 @@
    - 要件
      - Deployment
        - 名前は`nfs-server`
+       - Namespaceは`nfs`
        - replicas: `1`
        - labelはすべて`role: nfs-server`
        - Pod
@@ -187,6 +182,7 @@
    deployment.apps/nfs-server deleted
 
    $ kubectl delete -f nfs-server-pvc.yaml
+   namespace/nfs deleted
    persistentvolumeclaim/nfs-server-pvc deleted
    ```
 
