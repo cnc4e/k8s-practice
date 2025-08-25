@@ -22,7 +22,7 @@ Amazon VPC CNIにNetworkPolicyを適用させます。[公式の手順][3]を参
 ## Calicoのデプロイ
 
 > :information_source:  
-> 本手順は、EKS等、NetworkPolicyに対応していないCNIを使用している場合に実施してください。
+> 本手順は、NetworkPolicyに対応していないCNIを使用している場合に実施してください。
 
 Calicoをクラスタにデプロイします。[公式の手順][1]を参考に作業します。
 
