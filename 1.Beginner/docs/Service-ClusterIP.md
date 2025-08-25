@@ -71,7 +71,7 @@ spec:
      name: nginx-svc
    spec:
      selector:
-       app: test
+       app: nginx
      ports:
      - protocol: TCP
        port: 80
@@ -95,7 +95,7 @@ spec:
 1. Serviceを経由してDeploymentにアクセスする。
    （宛先は`nginx-svc`を指定する）
 
-1. 2つあるPod:nginx-XXXXXそれぞれに含まれるtestコンテナに対して追加コマンドを発行し、コンテナ内の/usr/share/nginx/html/index.htmlを以下内容に修正する。
+1. 2つあるPod:nginx-XXXXXそれぞれに含まれるコンテナに対して追加コマンドを発行し、コンテナ内の/usr/share/nginx/html/index.htmlを以下内容に修正する。
 
    > :information_source:  
    > nginxのコンテナイメージにはvi、nanoといったeditorが含まれていません。  
@@ -116,7 +116,7 @@ spec:
 1. curlコマンドの宛先を`nginx-svc`とし、Serviceを経由してDeploymentに複数回アクセスする。
    (表示される結果が`ランダムで変わる`ことを確認する）
 
-1. Service:nginx-svcのlabelSelectorを「app: test」から「`app: test2`」に修正し、修正を適用する。
+1. Service:nginx-svcのlabelSelectorを「app: nginx」から「`app: nginx2`」に修正し、修正を適用する。
 
 1. curlコマンドの宛先を`nginx-svc`とし、Serviceを経由してDeploymentに複数回アクセスする。
    (`アクセスできない`ことを確認する）

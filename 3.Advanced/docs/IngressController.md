@@ -26,13 +26,9 @@ Ingress Controllerにはいくつかの種類があります。その中でもNg
 
 2. AWSマネジメントコンソール（コマンドでも可）でNginx IngressのELBが作成されていることを確認してください。ELBのタグを見ればNginx Ingressのものか判断できます。
 
-3. Nginx Ingress用LBにアタッチされているセキュリティグループを確認してください。
-
-4. ワーカーノードのセキュリティグループを確認し、Nginx Ingress用LBのセキュリティグループからのインバウンドが許可されていることを確認してください。
-
 次章[Ingress](Ingress.md)で実際の動作を確認しましょう。
 
-具体的な操作およびその結果に関する回答例は[こちら](../ans/LimitRange_answer.md)にあります。
+具体的な操作およびその結果に関する回答例は[こちら](../ans/IngressController_answer.md)にあります。
 具体的な操作方法がわからなかった場合や、想定した結果にならなかった場合などに参照してください。
 
 [1]:https://kubernetes.github.io/ingress-nginx/deploy/

@@ -202,6 +202,9 @@
    httpd-5d77646999-9h8kr   19m          39Mi
    nginx-74c9bf5488-tdnsq   0m           2Mi
 
+   ## ここで以下のエラーが出力された場合はメトリクスサーバーが入ってません。前章を参考に、インストールしてください
+   error: Metrics API not available
+
    ## HPAによるAutoScaling開始
    $ kubectl get pod
    NAME                     READY   STATUS    RESTARTS   AGE

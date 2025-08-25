@@ -174,14 +174,15 @@
    ```yml
    # manifest (prod)
    ## kustomization.yaml
-   bases:
+   resources:
      - ../../base
    patches:
      - configmap.yaml
 
    namePrefix: prod-
-   commonLabels:
-     env: prod
+   labels:
+     - pairs:
+         env: prod
    ```
 
    ```yml
@@ -196,16 +197,17 @@
    ```
 
    ```yml
-   # manifest (prod)
+   # manifest (dev)
    ## kustomization.yaml
-   bases:
+   resources:
      - ../../base
    patches:
      - configmap.yaml
 
    namePrefix: dev-
-   commonLabels:
-     env: dev
+   labels:
+     - pairs:
+         env: dev
    ```
 
 1. 以下のコマンドでprodとdevをデプロイしてください。（以下コマンドはkustomizeディレクトリで実行した場合）
@@ -296,7 +298,7 @@
    ```yml
    # manifest (prod)
    ## kustomization.yaml
-   bases:
+   resources:
      - ../../base
    patches:
      - configmap.yaml
@@ -328,7 +330,7 @@
    ```yml
    # manifest (dev)
    ## kustomization.yaml
-   bases:
+   resources:
      - ../../base
    patches:
      - configmap.yaml

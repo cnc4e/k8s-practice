@@ -206,7 +206,7 @@
 
    ```bash
    # manifest修正
-   $ cat Deployment.yaml | sed 's/nginx:1.22/nginx:1.23/' > Deployment.yaml
+   $ sed -i 's/nginx:1.22/nginx:1.23/' Deployment.yaml
    # 修正を適用
    $ kubectl apply -f Deployment.yaml
    deployment.apps/practice configured
