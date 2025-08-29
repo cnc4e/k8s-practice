@@ -1,0 +1,131 @@
+# manifest
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sbdemo-web
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: sbdemo-web
+data:
+  nginx.conf: |
+    user  nginx;
+    worker_processes 1;
+    pid        /var/run/nginx.pid;
+    events {
+        worker_connections 1024;
+    }
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+        access_log /dev/stdout;
+        error_log  /dev/stderr debug;
+        sendfile        on;
+        keepalive_timeout  65;
+        include /etc/nginx/conf.d/server.conf;
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-conf
+  namespace: sbdemo-web
+data:
+  server.conf: |
+    server {
+        server_name  springdemo.example.com;
+        listen 80;
+        location ~* \.(js|jpg|png|css)$ {
+            expires 168h;
+            root   /usr/share/nginx/html;
+        }
+        location / {
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Server $host;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Host $http_host;
+            proxy_pass http://sbdemo-apserver-service.sbdemo-ap:8080;
+            proxy_cookie_path / /;
+        }
+        location = /index.html {
+            root   /usr/share/nginx/html;
+            index index.html;
+        }
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sbdemo-nginx
+  namespace: "sbdemo-web"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sbdemo-nginx
+  template:
+    metadata:
+      labels:
+        app: sbdemo-nginx
+    spec:
+      containers:
+        - name: nginx
+          image: dayan888/springdemo:nginx
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: server-conf
+              mountPath: /etc/nginx/conf.d/server.conf
+              subPath: server.conf
+        - name: busybox
+          image: busybox:latest
+          command: ["/bin/sh", "-c", "sleep 3600"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+        - name: server-conf
+          configMap:
+            name: server-conf
+            items:
+              - key: server.conf
+                path: server.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sbdemo-nginx-service
+  namespace: sbdemo-web
+spec:
+  type: ClusterIP
+  ports:
+    - name: "http-port"
+      protocol: "TCP"
+      port: 80
+      targetPort: 80
+  selector:
+    app: sbdemo-nginx

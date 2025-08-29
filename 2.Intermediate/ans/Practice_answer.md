@@ -294,18 +294,6 @@ spec:
          image: dayan888/springdemo:postgres9.6
          ports:
           - containerPort: 5432
-         volumeMounts:
-         - name: pvc-db-volume
-           mountPath: /var/lib/postgresql
-  volumeClaimTemplates:
-  - metadata:
-      name: pvc-db-volume
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      resources:
-        requests:
-          storage: 1G
 ---
 apiVersion: v1
 kind: Service

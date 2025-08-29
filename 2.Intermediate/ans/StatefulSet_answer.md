@@ -29,7 +29,7 @@
      name:
        nginx-sts
    spec:
-     serviceName: nginx-sts
+     serviceName: nginx-svc
      replicas: 3
      selector:
        matchLabels:
