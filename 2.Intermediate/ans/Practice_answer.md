@@ -294,7 +294,7 @@ spec:
          image: dayan888/springdemo:postgres9.6
          ports:
           - containerPort: 5432
-           volumeMounts:
+         volumeMounts:
          - name: pvc-db-volume
            mountPath: /var/lib/postgresql
   volumeClaimTemplates:
