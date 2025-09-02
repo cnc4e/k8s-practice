@@ -394,9 +394,6 @@ metadata:
   name: sbdemo-nfs-pvc
   namespace: sbdemo-ap
 spec:
-  # selector:
-  #   matchLabels:
-  #     role: nfs-pv
   accessModes:
     - ReadWriteOnce
   storageClassName: ""
