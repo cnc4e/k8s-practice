@@ -121,7 +121,7 @@ spec:
 1. curlコマンドの宛先を`nginx-svc`とし、Serviceを経由してDeploymentに複数回アクセスする。
    (`アクセスできない`ことを確認する）
 
-1. Deployment:nginx、Deployment:curlおよびService:nginx-svcを削除する。
+1. Deployment:nginx、Pod:curlおよびService:nginx-svcを削除する。
 
 以上で本チュートリアルは終了です。
 

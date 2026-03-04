@@ -54,14 +54,6 @@ volumeClaimTemplateはPodごとにPVCおよびPVを作成する、StatefulSetで
 
 1. Deployment:nginx-dp、PVC:nginx-dp-pvcを削除してください。
 
-   【回答例】
-
-   ```bash
-   $ kubectl delete -f nginx-dp.yaml
-   deployment.apps "nginx-dp" deleted
-   persistentvolumeclaim "nginx-dp-pvc" deleted
-   ```
-
 ここまでがDeploymentでのボリュームプロビジョニングのおさらいです。
 注目するポイントとしては展開したPodすべてで同じボリュームを共有する点です。
 そのため、PVCおよびPVは1つしか作られません。ボリュームの中身もすべてのPodで共有します。

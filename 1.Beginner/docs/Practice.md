@@ -52,7 +52,7 @@
 1. Pod:curlからService:practice-svcを経由してDeploymentにアクセスし続ける。
    - アップデート中にタイムアウトが発生しないことを確認する
    - 問題2で修正したindex.htmlが表示`される`ことを確認する。
-1. Deployment:practiceとService:practice-svcを削除する。
+1. Deployment:practiceとPod:curlとService:practice-svcを削除する。
 
 以上で本演習は終了です。
 

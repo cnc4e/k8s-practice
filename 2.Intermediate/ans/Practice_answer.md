@@ -19,8 +19,10 @@
     - replicas: `1`
     - labelはすべて`role: nfs-server`
     - Pod
-      - イメージは`k8s.gcr.io/volume-nfs:0.8`
-      - volumeプラグインで上記PVC:`nfs-server-pvc`を指定
+      - イメージは`itsthenetwork/nfs-server-alpine`
+      - env
+        - SHARED_DIRECTORYの値は`/exports`
+      - volumeプラグインで上記PVC:`sbdemo-nfs-server-pvc`を指定
       - 上記で定義したボリュームをコンテナの`/exports`にマウント
       - 待ち受けポートは次の通り
         - nfs: 2049
@@ -83,7 +85,10 @@ spec:
     spec:
       containers:
       - name: nfs-server
-        image: k8s.gcr.io/volume-nfs:0.8
+        image: itsthenetwork/nfs-server-alpine
+        env:
+        - name: SHARED_DIRECTORY
+          value: /exports
         ports:
           - name: nfs
             containerPort: 2049
@@ -451,7 +456,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sbdemo-apserver-service
+  name: sbdemo-apservice
   namespace: sbdemo-ap
 spec:
   type: ClusterIP
@@ -471,7 +476,7 @@ namespace/sbdemo-ap created
 persistentvolumeclaim/sbdemo-nfs-pvc created
 configmap/ap-config created
 deployment.apps/sbdemo-apserver created
-service/sbdemo-apserver-service created
+service/sbdemo-apservice created
 ```
 
 ## 問題5: WEBサーバ
@@ -527,7 +532,7 @@ service/sbdemo-apserver-service created
               proxy_set_header X-Forwarded-Proto $scheme;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header Host $http_host;
-              proxy_pass http://sbdemo-apserver-service.sbdemo-ap:8080;
+              proxy_pass http://sbdemo-apservice.sbdemo-ap:8080;
               proxy_cookie_path / /;
           }
           error_page   500 502 503 504  /50x.html;
@@ -616,7 +621,7 @@ data:
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header Host $http_host;
-            proxy_pass http://sbdemo-apserver-service.sbdemo-ap:8080;
+            proxy_pass http://sbdemo-apservice.sbdemo-ap:8080;
             proxy_cookie_path / /;
         }
         location = /index.html {
@@ -656,16 +661,6 @@ spec:
             - name: server-conf
               mountPath: /etc/nginx/conf.d/server.conf
               subPath: server.conf
-        - name: busybox
-          image: busybox:latest
-          command: ["/bin/sh", "-c", "sleep 3600"]
-          resources:
-            requests:
-              cpu: 100m
-              memory: 100Mi
-            limits:
-              cpu: 100m
-              memory: 100Mi
       volumes:
         - name: nginx-conf
           configMap:

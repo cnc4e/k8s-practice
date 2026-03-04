@@ -97,7 +97,7 @@ NFSサーバを構築します。
 
    - 要件
      - PersistentVolumeClaim
-       - 名前は`nfs-pvc`
+       - 名前は`nfs-server-pvc`
        - Namespaceは`nfs`
        - storageClassNameは`指定しない`（デフォルトのStorageClassを使用する）
        - accessModesは`ReadWriteOnce`
@@ -114,7 +114,7 @@ NFSサーバを構築します。
        - replicas: `1`
        - labelはすべて`role: nfs-server`
        - Pod
-         - イメージは`k8s.gcr.io/volume-nfs:0.8`
+         - イメージは`docker.io/adnanhodzic/nfs-server-k8s`
          - volumeプラグインで上記PVC:`nfs-server-pvc`を指定
          - 上記で定義したボリュームをコンテナの`/exports`にマウント
 
@@ -122,7 +122,7 @@ NFSサーバを構築します。
 
 1. PVリソースのオブジェクト一覧を確認してください。
 
-1. AWSのマネジメントコンソールなどでEBSボリュームを確認し「kubernetes-dynamic-pvc-」から始まる名前のボリュームが作成されていることを確認してください。  
+1. AWSのマネジメントコンソールなどでEBSボリュームを確認し「<クラスタ名>-dynamic-pvc-」から始まる名前のボリュームが作成されていることを確認してください。  
    (dvpによってEBSボリュームが自動作成されることを確認します)
 
 1. Deployment, Podのオブジェクト一覧を表示し、`nfs-server`を含んだDeployment, Podが作成されていることを確認してください。

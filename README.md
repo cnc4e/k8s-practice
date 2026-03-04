@@ -40,6 +40,9 @@ K8s practice は大きく以下の4つのカテゴリに分けています。
 > EKSクラスタで使用するノードは`マネージド型ノード`を選択してください。
 > AWS Fargateは機能制約があるため、Amazon EBSを使用した問題など、一部の練習問題が実施できません。
 
+> :information_source:  
+> AWSのコンソール画面でEKSを作成する場合、学習のためオートモードをOFFにすることを推奨します。
+
 [2]:https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/getting-started.html
 
 <details>
@@ -48,6 +51,25 @@ K8s practice は大きく以下の4つのカテゴリに分けています。
   </summary>
   <div>
   環境構築に困った場合は以下を参考にしてみてください。
+
+  - eksctlのダウンロードとインストール
+
+    ```bash
+    # eksctlのダウンロードとインストール
+    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+
+    # 確認
+    ls -l /tmp/eksctl
+
+    # バイナリの移動
+    sudo mv /tmp/eksctl /usr/local/bin
+
+    # 実行権限の付与
+    sudo chmod +x /usr/local/bin/eksctl
+
+    # インストール確認
+    eksctl version
+    ```
 
   - eksctlコマンド
 
@@ -58,7 +80,7 @@ K8s practice は大きく以下の4つのカテゴリに分けています。
       --region <リージョン> \
       --nodes=2 \
       --node-type t3.medium \
-      --version 1.22
+      --version 1.34
 
     # クラスタ削除
     eksctl delete cluster \

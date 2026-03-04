@@ -29,8 +29,10 @@
     - replicas: `1`
     - labelはすべて`role: nfs-server`
     - Pod
-      - イメージは`k8s.gcr.io/volume-nfs:0.8`
-      - volumeプラグインで上記PVC:`nfs-server-pvc`を指定
+      - イメージは`itsthenetwork/nfs-server-alpine`
+      - env
+        - SHARED_DIRECTORYの値は`/exports`
+      - volumeプラグインで上記PVC:`sbdemo-nfs-server-pvc`を指定
       - 上記で定義したボリュームをコンテナの`/exports`にマウント
       - 待ち受けポートは次の通り
         - nfs: 2049
@@ -125,7 +127,7 @@
     - Namespaceは`sbdemo-ap`
     - 以下のKey-Valueをdataとして持つ
       - SPRING_PROFILES_ACTIVE: "prd"
-      - DB_URL: "jdbc:postgresql://sbdemo-postgres-service.sbdemo-db:5432/demodb?   user=postgres&password=postgres"
+      - DB_URL: "jdbc:postgresql://sbdemo-postgres-service.sbdemo-db:5432/demodb?user=postgres&password=postgres"
       - PIC_DIR: "/opt/picDir"
       - REDIS_HOST: "sbdemo-redis-service.sbdemo-redis"
       - REDIS_PORT: "6379"
@@ -144,7 +146,7 @@
         - volumeプラグインでPVC:`sbdemo-nfs-pvc`を指定
         - 上記で定義したボリュームをコンテナの`/opt/picDir`にマウント
     - Service
-      - 名前は`sbdemo-postgres-service`
+      - 名前は`sbdemo-apservice`
       - Namespaceは`sbdemo-ap`
       - typeは`ClusterIP`
       - Protocolは`TCP`
@@ -205,7 +207,7 @@
               proxy_set_header X-Forwarded-Proto $scheme;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header Host $http_host;
-              proxy_pass http://sbdemo-apserver-service.sbdemo-ap:8080;
+              proxy_pass http://sbdemo-apservice.sbdemo-ap:8080;
               proxy_cookie_path / /;
           }
           error_page   500 502 503 504  /50x.html;
