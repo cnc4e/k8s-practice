@@ -40,7 +40,7 @@ Pod内のメインコンテナを起動する前に一時的なコンテナをPo
          - initContainers
            - 名前`init`
            - イメージは`busybox`
-           - commandは`['/bin/sh','-c','echo initContainer de settei sita noda > /tmp/ index.html']`
+           - commandは`['/bin/sh','-c','echo initContainer de settei sita noda > /tmp/index.html']`
            - volume:index-htmlを`/tmp`にマウント
          - volume
            - 名前は`index-html`

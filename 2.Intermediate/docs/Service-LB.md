@@ -18,13 +18,14 @@ K8sクラスタ外部からアクセスを受けられるようにするにはLo
    - 要件
      - Deployment
        - 名前は`nginx`
+       - Namespaceは`web`
        - replicas: `1`
        - labelはすべて`app: nginx`
        - Pod
          - 名前は`nginx`
          - イメージは`nginx:1.12`
      - Service
-       - 名前は`nginx-lb`
+       - 名前は`nginx-svc`
        - Namespaceは`web`
        - 対象のlabelは`app: nginx`
        - プロトコルは`TCP`
@@ -32,16 +33,16 @@ K8sクラスタ外部からアクセスを受けられるようにするにはLo
        - clusterIPは`指定なし`で良い
        - typeは`LoadBalancer`
 
-1. Serviceリソースの一覧を表示しデプロイしたnginx-lbの`EXTERNAL-IP`を確認してください。（あとで使うので記録しておく）
+1. Serviceリソースの一覧を表示しデプロイしたnginx-svcの`EXTERNAL-IP`を確認してください。（あとで使うので記録しておく）
 
-1. インターネット接続可能な端末のwebブラウザからさきほど確認したnginx-lbのEXTERNAL-IPにアクセスしてください。  
+1. インターネット接続可能な端末のwebブラウザからさきほど確認したnginx-svcのEXTERNAL-IPにアクセスしてください。  
   （AWSの場合、ELBが使用可能になるまで2分くらいかかる。最初はエラーになるので何度かアクセスしてみる。最長でも5分くらいすればアクセス可能になる。）
 
 1. AWSマネジメントコンソールなどでELBを確認し、EXTERNAL-IPと同じDNS名を持つclassicのLBがデプロイされていることを確認してください。また、LBにアタッチされたsecurity group名を確認してください。
 
 1. AWSマネジメントコンソールなどでK8sのワーカーにアタッチされているsecurity groupを確認し、LBにアタッチされたsecurity groupからのインバウンドが許可されていることを確認してください。
 
-1. curlを実行できるPodを展開し、Service:nginx-lbに`ClusterIP`に対してcurlを実行し、アクセスできることを確認してください。  
+1. curlを実行できるPodを展開し、Service:nginx-svcに`ClusterIP`に対してcurlを実行し、アクセスできることを確認してください。  
 
 1. 作成したリソースを削除してください。
 
